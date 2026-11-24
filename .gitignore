@@ -1,8 +1,17 @@
-# Secrets
+# Secrets and machine-specific settings (API keys, PUBLIC_BASE_URL with this PC's address).
+# Only the .env.example templates are committed.
 .env
 .env.*
+*.env
 !.env.example
 backend/.env
+.envrc
+*.local
+*.pem
+*.key
+# Claude Code: personal settings and notes (CLAUDE.md is shared and stays committed)
+.claude/settings.local.json
+CLAUDE.local.md
 
 # Call run logs written by `python -m app.call.run`
 backend/runs/
@@ -20,6 +29,9 @@ node_modules/
 dist/
 # Screenshots from `npm run screenshots` (browse them at /dev/screenshots)
 frontend/public/screenshots/
+# Playwright artifacts
+test-results/
+playwright-report/
 *.tsbuildinfo
 .vite/
 

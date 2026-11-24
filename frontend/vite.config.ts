@@ -11,10 +11,10 @@ import { defineConfig, type Plugin } from 'vite'
 const BACKEND = '127.0.0.1:8000'
 const PORT = Number(process.env.FRONTEND_PORT ?? 5180)
 
-// This PC on the tailnet, read on 2026-11-24 with `tailscale.exe ip -4` and
-// `tailscale.exe status --json` (Self.DNSName). Add more with FRONTEND_ALLOWED_HOSTS=a,b.
-// (Vite allows IP addresses and localhost anyway; the names are what need listing.)
-const TAILNET_HOSTS = ['<tailscale-ip>', '<machine>.<tailnet>.ts.net', '<machine>']
+// Tailscale MagicDNS names (<machine>.<tailnet>.ts.net). Vite allows IP addresses and localhost
+// anyway, so the tailnet IP needs no entry. Add other names (e.g. a MagicDNS short name) with
+// FRONTEND_ALLOWED_HOSTS=a,b. No machine-specific names are committed here.
+const TAILNET_HOSTS = ['.ts.net']
 const EXTRA_HOSTS = (process.env.FRONTEND_ALLOWED_HOSTS ?? '')
   .split(',')
   .map((h) => h.trim())

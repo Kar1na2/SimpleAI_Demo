@@ -51,8 +51,9 @@ Vite listens on `0.0.0.0:5180` inside WSL (NAT mode). To reach it from the tailn
    NAT mode: a `netsh portproxy` from `<tailscale-ip>:5180` to the WSL IP, plus an inbound firewall rule
    "Call Link Demo 5180 (Tailscale only)" for TCP 5180 from `100.64.0.0/10`. Mirrored mode: firewall
    rules only. Idempotent. **Re-run it after a WSL restart or reboot** (the WSL IP changes).
-3. On the Mac: `http://<tailscale-ip>:5180/dev/screenshots`, and the links that `make live` prints
-   (`PUBLIC_BASE_URL` defaults to `http://<tailscale-ip>:5180`; override it in `backend/.env`).
+3. On the Mac: `http://<tailscale-ip>:5180/dev/screenshots`, and the links that `make live` prints.
+   For those links, set `PUBLIC_BASE_URL=http://<tailscale-ip>:5180` in `backend/.env` (gitignored;
+   the default is `http://localhost:5180`).
 4. Undo with `unexpose-demo.ps1` (same folder). It removes only what expose added.
 
 Rules for this machine: never run or change `tailscale serve`, `funnel`, `cert` or any Tailscale config

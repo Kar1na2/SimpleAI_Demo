@@ -30,10 +30,10 @@ class Settings(BaseSettings):
     # Matches docker-compose.yml (Postgres 16 on host port 5433).
     database_url: str = "postgresql+asyncpg://simpleai:simpleai@localhost:5433/simpleai"
 
-    # Texted link is {public_base_url}/s/{token}. Default: the Vite dev server (port 5180) on this
-    # PC's Tailscale IP, so links open from a Mac on the tailnet once scripts/windows/expose-demo.ps1
-    # has run. Override in backend/.env (e.g. http://localhost:5180 for local-only use).
-    public_base_url: str = "http://<tailscale-ip>:5180"
+    # Texted link is {public_base_url}/s/{token}. Default: the local Vite dev server (port 5180).
+    # To open links from another device on the tailnet (after scripts/windows/expose-demo.ps1), set
+    # PUBLIC_BASE_URL=http://<tailscale-ip>:5180 in backend/.env. Never hard-code an address here.
+    public_base_url: str = "http://localhost:5180"
     link_ttl_minutes: int = 30
 
     # Not in CLAUDE.md: mounts /api/dev/* (create call, emit arbitrary event). Off outside local dev.

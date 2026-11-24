@@ -120,10 +120,11 @@ screen. Do not build anything the recording won't show.
                                                                Starred takes live in `backend/takes/` (committed). Replay: `POST /api/replay {run, max_gap_ms}`.
 
 ## Remote access (Tailscale)
-- The user opens the frontend from a Mac at `http://<tailscale-ip>:5180` (this PC: <tailscale-ip>,
-  MagicDNS <machine>.<tailnet>.ts.net). Only the Vite port is exposed; uvicorn stays on 127.0.0.1:8000.
-- `PUBLIC_BASE_URL` defaults to `http://<tailscale-ip>:5180`, so links from `/api/dev/calls/{id}/link` open on the Mac.
-  Override in `backend/.env`.
+- The user opens the frontend from a Mac at `http://<tailscale-ip>:5180` (`make remote-info` prints this
+  PC's Tailscale IP and MagicDNS name). Only the Vite port is exposed; uvicorn stays on 127.0.0.1:8000.
+- `PUBLIC_BASE_URL` defaults to `http://localhost:5180`. For the Mac, set it to `http://<tailscale-ip>:5180`
+  in `backend/.env` (gitignored), so links from `/api/dev/calls/{id}/link` open there.
+  Never commit IP addresses, hostnames or keys: machine-specific values live only in `backend/.env`.
 - Exposing is done by the user in an elevated Windows PowerShell with `scripts/windows/expose-demo.ps1`
   (NAT: netsh portproxy tailscale-ip:5180 -> wsl-ip:5180, plus a firewall rule for 100.64.0.0/10 only).
   Undo with `unexpose-demo.ps1`. Re-run expose after a WSL restart (the WSL IP changes). `make remote-info` prints the commands.
