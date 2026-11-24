@@ -16,6 +16,14 @@ Modes: auto POSTs the link's confirm endpoint 1.5s after a confirm beat is spoke
 the link right after link.sent. manual waits up to 180s for a real click (polled from the DB,
 so a click handled by another process counts).
 
+Speech: with tts=True every turn is an OpenAI TTS clip (app/call/tts.py). Customer beats are
+pre-generated when the call starts; agent lines are generated as they come. transcript.turn and
+audio.play are emitted together, then the call waits for the clip's real duration. Without TTS
+(fast test runs), pacing falls back to words / 2.7 seconds.
+
+Every live call writes backend/runs/<scenario>-<timestamp>.json when it ends (app/call/checks.py):
+all events, the end-state checks, and an audio manifest for replay.
+
 The orchestrator never reads the script to decide what the page shows. It reads call_events
 back from the DB (CallView), the same as the link page.
 """
@@ -36,6 +44,7 @@ from app.call.agent import Agent
 from app.call.reset import reset_scenario_data
 from app.call.scenario import Beat, CallView, Scenario, load_scenario
 from app.call.tools import ToolContext
+from app.call.tts import TTS, Clip
 from app.db import SessionLocal
 from app.events import EventType, emit, history
 from app.links import mint, revoke
@@ -62,7 +71,7 @@ CONNECTED_NOTE = {
 
 
 def speech_seconds(text: str) -> float:
-    """How long it takes to say `text` at speed 1. Prompt 4 swaps this for the real TTS audio length."""
+    """Estimated time to say `text` at speed 1. Used only when TTS is off; otherwise the mp3 length."""
     return max(0.5, len(text.split()) / WORDS_PER_SECOND)
 
 
@@ -80,7 +89,9 @@ _start_lock = asyncio.Lock()
 
 
 class CallRun:
-    def __init__(self, scenario: Scenario, call_id: uuid.UUID, customer: Customer, mode: Mode, speed: float):
+    def __init__(
+        self, scenario: Scenario, call_id: uuid.UUID, customer: Customer, mode: Mode, speed: float, tts: bool = False
+    ):
         self.scenario = scenario
         self.call_id = call_id
         self.customer_name = customer.name
@@ -96,8 +107,15 @@ class CallRun:
         self.ended_before_beat: str | None = None
         self.nudges: list[str] = []  # beat id per silence nudge (hidden: not an event)
         self.started = time.monotonic()
+        self.started_at = dt.datetime.now(dt.UTC)
         self.duration: float | None = None
         self.task: asyncio.Task[None] | None = None
+        self.tts = TTS() if tts else None
+        self.audio: dict[str, dict] = {}  # clip hash -> manifest (what produced it), for replay
+        self._beat_clips: asyncio.Task[dict[str, Clip]] | None = None
+        self.checks: list[tuple[str, bool, str]] = []
+        self.passed: bool | None = None
+        self.run_file: str | None = None
         self._confirms_seen = 0
         self.ctx = ToolContext(
             call_id=call_id,
@@ -112,6 +130,8 @@ class CallRun:
 
     async def run(self) -> None:
         reason = "error"
+        if self.tts:
+            self._beat_clips = asyncio.create_task(self._pregenerate_beats())
         try:
             reason = await asyncio.wait_for(self._run(), CALL_TIMEOUT_SECONDS)
         except TimeoutError:
@@ -127,6 +147,16 @@ class CallRun:
                 await self._finish(reason)
             finally:
                 self.duration = time.monotonic() - self.started
+                if self._beat_clips and not self._beat_clips.done():
+                    self._beat_clips.cancel()
+                elif self._beat_clips and not self._beat_clips.cancelled():
+                    self._beat_clips.exception()  # mark retrieved; a failure already ended the call
+                try:
+                    from app.call.checks import record_run  # late import: checks imports this module
+
+                    await record_run(self)
+                except Exception:  # noqa: BLE001 - a run file must never break call teardown
+                    log.exception("call %s: couldn't write the run file", self.call_id)
                 ACTIVE.pop(str(self.call_id), None)
                 if self._http:
                     await self._http.aclose()
@@ -199,21 +229,44 @@ class CallRun:
     async def _pause(self, seconds: float) -> None:
         await asyncio.sleep(seconds / self.speed)
 
-    async def _speak(self, text: str) -> None:
-        await self._pause(speech_seconds(text))
+    async def _pregenerate_beats(self) -> dict[str, Clip]:
+        """Every customer beat's clip (the truth, `say`), generated in parallel at call start."""
+        assert self.tts is not None
+        beats = self.scenario.beats
+        clips = await asyncio.gather(*(self.tts.speak(b.say, "customer") for b in beats))
+        return {b.id: c for b, c in zip(beats, clips, strict=True)}
 
-    def _duration_ms(self, text: str) -> int:
-        """Spoken length of a turn at this call's speed. Sent on transcript.turn (typing indicator)."""
-        return round(speech_seconds(text) / self.speed * 1000)
+    async def _say(self, payload: dict, clip: Clip | None, then: list[tuple[EventType, dict]] | None = None) -> None:
+        """Emit the turn and its audio.play together (plus any `then` events), then wait while it's spoken."""
+        text = payload["text_said"]
+        seconds = (clip.duration_ms / 1000 if clip else speech_seconds(text)) / self.speed
+        payload["duration_ms"] = round(seconds * 1000)  # playback length at this speed (typing indicator)
+        await emit(self.call_id, EventType.transcript_turn, payload)
+        if clip:
+            self.audio[clip.hash] = clip.manifest()
+            await emit(
+                self.call_id,
+                EventType.audio_play,
+                {
+                    "url": clip.url,
+                    "hash": clip.hash,
+                    "duration_ms": clip.duration_ms,
+                    "speaker": payload["speaker"],
+                    "name": payload["name"],
+                    "turn_id": payload["turn_id"],
+                },
+            )
+        for etype, extra in then or []:
+            await emit(self.call_id, etype, extra)
+        await asyncio.sleep(seconds)
 
     def _next_turn_id(self) -> int:
         self.turn_count += 1
         return self.turn_count
 
     async def _agent_says(self, text: str) -> None:
-        await emit(
-            self.call_id,
-            EventType.transcript_turn,
+        clip = await self.tts.speak(text, "agent") if self.tts else None  # before emitting: text and voice start together
+        await self._say(
             {
                 "turn_id": self._next_turn_id(),
                 "speaker": "agent",
@@ -221,39 +274,37 @@ class CallRun:
                 "text_said": text,
                 "text_heard": text,
                 "beat_id": None,
-                "duration_ms": self._duration_ms(text),
             },
+            clip,
         )
-        await self._speak(text)
 
     async def _customer_says(self, beat: Beat) -> None:
+        clip = (await self._beat_clips)[beat.id] if self._beat_clips else None
         turn_id = self._next_turn_id()
         self.beat_turns[beat.id] = turn_id
-        await emit(
-            self.call_id,
-            EventType.transcript_turn,
-            {
-                "turn_id": turn_id,
-                "speaker": "customer",
-                "name": self.customer_name,
-                "text_said": beat.say,
-                "text_heard": beat.heard,
-                "beat_id": beat.id,
-                "duration_ms": self._duration_ms(beat.say),
-            },
-        )
+        payload = {
+            "turn_id": turn_id,
+            "speaker": "customer",
+            "name": self.customer_name,
+            "text_said": beat.say,
+            "text_heard": beat.heard,
+            "beat_id": beat.id,
+        }
+        if beat.marks:
+            payload["marks"] = beat.marks  # e.g. link_accepted: the director's "Customer said yes"
+        if beat.action:
+            payload["action"] = beat.action  # confirm: a Confirm click is expected right after this line
+        then = []
         if beat.corrects:
+            # Lands as the customer starts saying it, so the page strikes the wrong words right away.
             corrected = self.scenario.beat(beat.corrects)
-            await emit(
-                self.call_id,
-                EventType.transcript_correction,
-                {
-                    "turn_id": self.beat_turns[corrected.id],
-                    "beat_id": corrected.id,
-                    "corrected_text": corrected.say,
-                },
+            then.append(
+                (
+                    EventType.transcript_correction,
+                    {"turn_id": self.beat_turns[corrected.id], "beat_id": corrected.id, "corrected_text": corrected.say},
+                )
             )
-        await self._speak(beat.say)
+        await self._say(payload, clip, then)
 
     async def _agent_turn(self, texts: list[str]) -> None:
         assert self.agent is not None
@@ -340,13 +391,13 @@ async def prepare_call(scenario_name: str) -> tuple[Scenario, uuid.UUID, Custome
     return scenario, call_id, customer
 
 
-async def start_call(scenario_name: str, mode: Mode = "auto", speed: float = 1.0) -> CallRun:
+async def start_call(scenario_name: str, mode: Mode = "auto", speed: float = 1.0, tts: bool = False) -> CallRun:
     """Reset data, create the call, and run it as a background task. One live call per scenario."""
     async with _start_lock:
         if any(r.scenario.name == scenario_name for r in ACTIVE.values()):
             raise CallBusy(f"a {scenario_name} call is already running")
         scenario, call_id, customer = await prepare_call(scenario_name)
-        run = CallRun(scenario, call_id, customer, mode, speed)
+        run = CallRun(scenario, call_id, customer, mode, speed, tts=tts)
         ACTIVE[str(call_id)] = run
         run.task = asyncio.create_task(run.run(), name=f"call-{call_id}")
     return run

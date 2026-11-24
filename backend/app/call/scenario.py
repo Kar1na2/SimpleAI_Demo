@@ -11,13 +11,18 @@ system prompt in <name>.prompt.md. Beat fields:
   wait_for    optional, every listed condition must hold before the customer speaks:
                 agent_said_matches  case-insensitive regex, searched in everything the agent
                                     said since the previous customer beat (its latest turn)
+                agent_not_yet_said  case-insensitive regex that must NOT match anything the
+                                    agent has said so far in the whole call
                 event               an event type emitted since the previous customer beat
-                state               "cart.<SKU>.qty <op> <n>" or "reservation.<field> <op> <v>"
+                state               one predicate or a list (all must hold):
+                                    "cart.<SKU>.qty <op> <n>" or "reservation.<field> <op> <v>"
                                     (op: == != >= <= > <). A cart item that isn't in the cart,
                                     or a reservation not yet on screen, never matches.
   action      optional: "confirm" (auto mode POSTs the link's confirm endpoint; manual
               mode waits for a real click)
   optional    true: skip this beat if the call has already ended
+  marks       optional metadata copied onto the beat's transcript.turn, e.g. "link_accepted"
+              (the customer said yes to the link; the director's timeline shows it)
 
 The orchestrator evaluates wait_for against a CallView, built only from call_events.
 """
@@ -107,6 +112,7 @@ class BeatView:
     """What the orchestrator knows when deciding whether the next beat may be spoken."""
 
     agent_text: str = ""  # everything the agent said since the previous customer beat
+    agent_text_all: str = ""  # everything the agent has said in the whole call
     events: set[str] = field(default_factory=set)  # event types since the previous customer beat
     cart: dict[str, Any] | None = None  # latest state.cart snapshot
     reservation: dict[str, Any] | None = None  # latest state.reservation snapshot
@@ -116,36 +122,42 @@ class BeatView:
 class WaitFor:
     agent_said_matches: re.Pattern[str] | None = None
     event: str | None = None
-    state: StatePredicate | None = None
+    state: tuple[StatePredicate, ...] = ()
+    agent_not_yet_said: re.Pattern[str] | None = None
+
+    @staticmethod
+    def _regex(raw: Any, beat_id: str) -> re.Pattern[str]:
+        try:
+            return re.compile(str(raw), re.IGNORECASE)
+        except re.error as e:
+            raise ScenarioError(f"beat {beat_id}: bad regex {raw!r}: {e}") from None
 
     @classmethod
     def parse(cls, raw: dict[str, Any], beat_id: str) -> WaitFor:
-        unknown = set(raw) - {"agent_said_matches", "event", "state"}
+        unknown = set(raw) - {"agent_said_matches", "agent_not_yet_said", "event", "state"}
         if unknown:
             raise ScenarioError(f"beat {beat_id}: unknown wait_for keys {sorted(unknown)}")
-        pattern = None
-        if "agent_said_matches" in raw:
-            try:
-                pattern = re.compile(str(raw["agent_said_matches"]), re.IGNORECASE)
-            except re.error as e:
-                raise ScenarioError(f"beat {beat_id}: bad regex: {e}") from None
+        pattern = cls._regex(raw["agent_said_matches"], beat_id) if "agent_said_matches" in raw else None
+        not_yet = cls._regex(raw["agent_not_yet_said"], beat_id) if "agent_not_yet_said" in raw else None
         event = raw.get("event")
         if event is not None and event not in {t.value for t in EventType}:
             raise ScenarioError(f"beat {beat_id}: unknown event type {event!r}")
-        state = StatePredicate.parse(str(raw["state"])) if "state" in raw else None
-        if pattern is None and event is None and state is None:
+        raw_state = raw.get("state", [])
+        state = tuple(StatePredicate.parse(str(s)) for s in ([raw_state] if isinstance(raw_state, str) else raw_state))
+        if pattern is None and not_yet is None and event is None and not state:
             raise ScenarioError(f"beat {beat_id}: empty wait_for")
-        return cls(pattern, event, state)
+        return cls(pattern, event, state, not_yet)
 
     def unmet(self, view: BeatView) -> list[str]:
         """Conditions that don't hold yet, in plain words. Empty means the beat may be spoken."""
         out = []
         if self.agent_said_matches and not self.agent_said_matches.search(view.agent_text):
             out.append(f"agent_said_matches /{self.agent_said_matches.pattern}/")
+        if self.agent_not_yet_said and self.agent_not_yet_said.search(view.agent_text_all):
+            out.append(f"agent_not_yet_said /{self.agent_not_yet_said.pattern}/ (the agent already said it)")
         if self.event and self.event not in view.events:
             out.append(f"event {self.event} since the previous beat")
-        if self.state and not self.state.holds(view.cart, view.reservation):
-            out.append(f"state {self.state.raw}")
+        out.extend(f"state {p.raw}" for p in self.state if not p.holds(view.cart, view.reservation))
         return out
 
 
@@ -158,6 +170,7 @@ class Beat:
     wait_for: WaitFor | None = None
     action: Literal["confirm"] | None = None
     optional: bool = False
+    marks: str | None = None
 
     @property
     def heard(self) -> str:
@@ -183,7 +196,7 @@ class Scenario:
         return next(b for b in self.beats if b.id == beat_id)
 
 
-_BEAT_KEYS = {"id", "say", "heard_as", "corrects", "wait_for", "action", "optional"}
+_BEAT_KEYS = {"id", "say", "heard_as", "corrects", "wait_for", "action", "optional", "marks"}
 _META_KEYS = {"brand", "agent_name", "direction", "customer_id", "customer_phone"}
 
 
@@ -220,6 +233,7 @@ def parse_scenario(name: str, data: dict[str, Any], system_prompt: str) -> Scena
                 wait_for=WaitFor.parse(raw["wait_for"], bid) if raw.get("wait_for") else None,
                 action=action,
                 optional=bool(raw.get("optional", False)),
+                marks=raw.get("marks"),
             )
         )
     if not beats:
@@ -271,7 +285,9 @@ class CallView:
                 self.beat.agent_text = ""
                 self.beat.events = set()
             else:
-                self.beat.agent_text = f"{self.beat.agent_text} {payload.get('text_said', '')}".strip()
+                said = payload.get("text_said", "")
+                self.beat.agent_text = f"{self.beat.agent_text} {said}".strip()
+                self.beat.agent_text_all = f"{self.beat.agent_text_all} {said}".strip()
         elif etype == EventType.state_cart:
             self.beat.cart = payload
         elif etype == EventType.state_reservation:

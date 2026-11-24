@@ -14,29 +14,35 @@ beats:
     say: "Oh, hi! Yeah, I was looking at those last week but never ended up ordering."
 
   - id: c2
-    wait_for: { agent_said_matches: "link" }
-    say: "Sure, text it to me."
+    # Approved 2026-11-24: Ava sets up why she's calling (one question) before any link offer.
+    wait_for: { agent_said_matches: '\?', agent_not_yet_said: "link" }
+    say: "Yeah, actually, it's our anniversary next weekend, so I was thinking of cooking at home."
 
   - id: c3
+    wait_for: { agent_said_matches: "link" }
+    say: "Sure, text it to me."
+    marks: link_accepted
+
+  - id: c4
     wait_for: { event: link.sent }
     say: "Got it, it's open. So, I'd like two of the ribeyes."
     heard_as: "Got it, it's open. So, I'd like ten of the ribeyes."
 
-  - id: c4
+  - id: c5
     # Holds only once the ribeye is in the cart with a quantity other than 2.
     wait_for: { state: "cart.FP-RIBEYE-DA16.qty != 2" }
     say: "Wait, the page says ten. I said two, not ten."
-    corrects: c3
+    corrects: c4
 
-  - id: c5
+  - id: c6
     wait_for: { agent_said_matches: "butter" }
     say: "Oh, that actually looks good. Yeah, add one of those."
 
-  - id: c6
+  - id: c7
     wait_for: { event: confirm.requested }
     say: "Okay, everything looks right. Confirming now."
     action: confirm
 
-  - id: c7
+  - id: c8
     optional: true
     say: "Great, thanks Ava. Bye!"

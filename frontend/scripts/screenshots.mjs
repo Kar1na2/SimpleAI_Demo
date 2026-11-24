@@ -34,7 +34,7 @@ async function startCall(scenario) {
   const r = await fetch(`${API}/api/calls/start`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ scenario, mode: 'auto', speed: SPEED }),
+    body: JSON.stringify({ scenario, mode: 'auto', speed: SPEED, tts: false }), // link page only: no voices needed
   })
   if (r.status !== 201) throw new Error(`start ${scenario}: ${r.status} ${await r.text()}`)
   return (await r.json()).call_id

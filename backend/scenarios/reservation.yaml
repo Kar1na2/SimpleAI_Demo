@@ -16,6 +16,7 @@ beats:
   - id: c2
     wait_for: { agent_said_matches: "link" }
     say: "Yeah, sure, send it."
+    marks: link_accepted
 
   - id: c3
     wait_for: { state: "reservation.party_size == 5" }
@@ -26,10 +27,17 @@ beats:
     say: "Seven thirty works."
 
   - id: c5
+    # Approved 2026-11-24: answers Leo's "Is there anything else you'd like to change?"
+    wait_for:
+      agent_said_matches: "anything else"
+      state: ["reservation.date == 2026-12-04", "reservation.time == 19:30"]
+    say: "No, that's everything."
+
+  - id: c6
     wait_for: { event: confirm.requested }
     say: "Looks right. Confirming."
     action: confirm
 
-  - id: c6
+  - id: c7
     optional: true
     say: "Thanks, bye."

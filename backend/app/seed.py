@@ -85,7 +85,7 @@ JAMIE_LEAD = dict(product_sku="FP-RIBEYE-DA16", note="Interested in the dry-aged
 
 # --- Juniper Table: restaurant, Scenario B (inbound) ---
 SLOT_START = dt.date(2026, 11, 30)  # [CLAUDE.md] Mon
-SLOT_END = dt.date(2026, 12, 13)  # [CLAUDE.md] Sun, inclusive
+SLOT_END = dt.date(2026, 12, 31)  # inclusive; extended from Dec 13 (approved) so later December dates aren't greyed
 SLOT_TIMES = [dt.time(h, m) for h in range(17, 22) for m in (0, 30)][:-1]  # 17:00-21:00 every 30 min
 FULL_SLOTS = {(dt.date(2026, 12, 4), dt.time(19, 0))}  # [CLAUDE.md] Fri 19:00 full; 18:30 + 19:30 open
 

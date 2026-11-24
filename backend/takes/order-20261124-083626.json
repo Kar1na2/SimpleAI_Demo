@@ -1,0 +1,1224 @@
+{
+  "scenario": "order",
+  "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+  "mode": "auto",
+  "speed": 1.0,
+  "tts": true,
+  "started_at": "2026-11-24T08:36:26.224279+00:00",
+  "duration_s": 122.23,
+  "passed": true,
+  "error": null,
+  "nudges": [],
+  "checks": [
+    {
+      "label": "call finished without error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "agent spoke its wrap-up after the Confirm click (no silent hang-up)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "no 'set/booked/placed/done/confirmed' before the Confirm click",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "order placed",
+      "ok": true,
+      "detail": "status=placed"
+    },
+    {
+      "label": "cart is exactly 2 × ribeye + 1 × compound butter",
+      "ok": true,
+      "detail": "{\"FP-RIBEYE-DA16\": 2, \"FP-BUTTER-GH\": 1}"
+    },
+    {
+      "label": "transcript.correction exists for c4",
+      "ok": true,
+      "detail": "c4 turn_id=8"
+    },
+    {
+      "label": "link minted right after connected",
+      "ok": true,
+      "detail": "connected seq=3, minted seq=4"
+    },
+    {
+      "label": "link sent after the customer said yes (c3)",
+      "ok": true,
+      "detail": "yes seq=15, sent seq=17"
+    },
+    {
+      "label": "token revoked (DB + link.revoked event)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "GET /api/s/{token} returns 410 after the call",
+      "ok": true,
+      "detail": "got 410"
+    }
+  ],
+  "usage": {
+    "requests": 15,
+    "input_tokens": 46,
+    "output_tokens": 1239,
+    "cache_creation_input_tokens": 2726,
+    "cache_read_input_tokens": 55757,
+    "model": "claude-sonnet-5-5",
+    "cost_usd": 0.0248727
+  },
+  "unspoken_notes": [],
+  "audio": {
+    "e8cfb805a36f25bf68af145e8146eb6c": {
+      "hash": "e8cfb805a36f25bf68af145e8146eb6c",
+      "url": "/api/audio/e8cfb805a36f25bf68af145e8146eb6c.mp3",
+      "duration_ms": 7200,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Hi Jamie, this is Ava from Fieldstone Provisions. I wanted to catch up with you about your interest in our dry-aged ribeyes."
+    },
+    "181ccc0bdefcf445fd7aac9277d6683b": {
+      "hash": "181ccc0bdefcf445fd7aac9277d6683b",
+      "url": "/api/audio/181ccc0bdefcf445fd7aac9277d6683b.mp3",
+      "duration_ms": 5352,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Oh, hi! Yeah, I was looking at those last week but never ended up ordering."
+    },
+    "f35433c7d03b2544bba444eb60011d78": {
+      "hash": "f35433c7d03b2544bba444eb60011d78",
+      "url": "/api/audio/f35433c7d03b2544bba444eb60011d78.mp3",
+      "duration_ms": 4848,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Totally understandable. What are you shopping for, just a regular dinner or something special?"
+    },
+    "f766613c5d06d7b259cb67b0ad765627": {
+      "hash": "f766613c5d06d7b259cb67b0ad765627",
+      "url": "/api/audio/f766613c5d06d7b259cb67b0ad765627.mp3",
+      "duration_ms": 4752,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Yeah, actually, it's our anniversary next weekend, so I was thinking of cooking at home."
+    },
+    "a6e68a8bd59fbd87771147bb54fa795a": {
+      "hash": "a6e68a8bd59fbd87771147bb54fa795a",
+      "url": "/api/audio/a6e68a8bd59fbd87771147bb54fa795a.mp3",
+      "duration_ms": 9816,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Happy early anniversary, a home-cooked steak dinner sounds lovely. Before we continue, I can text you a link that shows your cart and what I'm noting as we talk. Want it?"
+    },
+    "07791d7bd1cbc8490627e2d33d9f6006": {
+      "hash": "07791d7bd1cbc8490627e2d33d9f6006",
+      "url": "/api/audio/07791d7bd1cbc8490627e2d33d9f6006.mp3",
+      "duration_ms": 1704,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Sure, text it to me."
+    },
+    "0af1239683833e75653dfbad3ca5eea3": {
+      "hash": "0af1239683833e75653dfbad3ca5eea3",
+      "url": "/api/audio/0af1239683833e75653dfbad3ca5eea3.mp3",
+      "duration_ms": 4848,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "I've just texted you the link. How many ribeyes would you like for the anniversary dinner?"
+    },
+    "43499214d0a197e893fb197c02ae303a": {
+      "hash": "43499214d0a197e893fb197c02ae303a",
+      "url": "/api/audio/43499214d0a197e893fb197c02ae303a.mp3",
+      "duration_ms": 4152,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Got it, it's open. So, I'd like two of the ribeyes."
+    },
+    "40a696a5611d80c989c956951c563eb0": {
+      "hash": "40a696a5611d80c989c956951c563eb0",
+      "url": "/api/audio/40a696a5611d80c989c956951c563eb0.mp3",
+      "duration_ms": 6864,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "I've added ten dry-aged ribeyes at seventy-two dollars each, and that gets you free shipping. Can you check it on the link?"
+    },
+    "a7dbc0a3049b9a6ee884b0c7e0f24b52": {
+      "hash": "a7dbc0a3049b9a6ee884b0c7e0f24b52",
+      "url": "/api/audio/a7dbc0a3049b9a6ee884b0c7e0f24b52.mp3",
+      "duration_ms": 4056,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Wait, the page says ten. I said two, not ten."
+    },
+    "488f7bbc380cd134a6f903fc7a80f42f": {
+      "hash": "488f7bbc380cd134a6f903fc7a80f42f",
+      "url": "/api/audio/488f7bbc380cd134a6f903fc7a80f42f.mp3",
+      "duration_ms": 6264,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Sorry about that, I've changed your cart to two ribeyes. Would you like to add our garlic-herb compound butter to go with them?"
+    },
+    "da3f274ec0c7a522b800767879144b4b": {
+      "hash": "da3f274ec0c7a522b800767879144b4b",
+      "url": "/api/audio/da3f274ec0c7a522b800767879144b4b.mp3",
+      "duration_ms": 3816,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Oh, that actually looks good. Yeah, add one of those."
+    },
+    "6cadc5c9ec730abdb8beacdba6f6c8f6": {
+      "hash": "6cadc5c9ec730abdb8beacdba6f6c8f6",
+      "url": "/api/audio/6cadc5c9ec730abdb8beacdba6f6c8f6.mp3",
+      "duration_ms": 11712,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "I've updated your cart to two ribeyes and one compound butter, which brings you to free shipping, pending your confirmation. Please look over the final page on the link and tap Confirm when you're ready."
+    },
+    "bb7ad4082f7dc6f043b89c5cbdabd3a8": {
+      "hash": "bb7ad4082f7dc6f043b89c5cbdabd3a8",
+      "url": "/api/audio/bb7ad4082f7dc6f043b89c5cbdabd3a8.mp3",
+      "duration_ms": 2952,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Okay, everything looks right. Confirming now."
+    },
+    "59a2a71651cec9c59516922fc5b50a7b": {
+      "hash": "59a2a71651cec9c59516922fc5b50a7b",
+      "url": "/api/audio/59a2a71651cec9c59516922fc5b50a7b.mp3",
+      "duration_ms": 9552,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Your order is placed: two dry-aged ribeyes and one compound butter, shipping within 2 business days. Happy anniversary, Jamie, and goodbye!"
+    }
+  },
+  "events": [
+    {
+      "id": 474,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 1,
+      "type": "call.status",
+      "payload": {
+        "status": "dialing"
+      },
+      "created_at": "2026-11-24T08:36:26.250798+00:00"
+    },
+    {
+      "id": 475,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 2,
+      "type": "call.status",
+      "payload": {
+        "status": "ringing"
+      },
+      "created_at": "2026-11-24T08:36:27.261937+00:00"
+    },
+    {
+      "id": 476,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 3,
+      "type": "call.status",
+      "payload": {
+        "status": "connected"
+      },
+      "created_at": "2026-11-24T08:36:29.273927+00:00"
+    },
+    {
+      "id": 477,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 4,
+      "type": "link.minted",
+      "payload": {
+        "token_id": 11,
+        "expires_at": "2026-11-24T09:06:29.280815+00:00"
+      },
+      "created_at": "2026-11-24T08:36:29.288929+00:00"
+    },
+    {
+      "id": 478,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 5,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 1,
+        "text_said": "Hi Jamie, this is Ava from Fieldstone Provisions. I wanted to catch up with you about your interest in our dry-aged ribeyes.",
+        "text_heard": "Hi Jamie, this is Ava from Fieldstone Provisions. I wanted to catch up with you about your interest in our dry-aged ribeyes.",
+        "duration_ms": 7200
+      },
+      "created_at": "2026-11-24T08:36:30.906606+00:00"
+    },
+    {
+      "id": 479,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 6,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/e8cfb805a36f25bf68af145e8146eb6c.mp3",
+        "hash": "e8cfb805a36f25bf68af145e8146eb6c",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 1,
+        "duration_ms": 7200
+      },
+      "created_at": "2026-11-24T08:36:30.911314+00:00"
+    },
+    {
+      "id": 480,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 7,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Jamie Park",
+        "beat_id": "c1",
+        "speaker": "customer",
+        "turn_id": 2,
+        "text_said": "Oh, hi! Yeah, I was looking at those last week but never ended up ordering.",
+        "text_heard": "Oh, hi! Yeah, I was looking at those last week but never ended up ordering.",
+        "duration_ms": 5352
+      },
+      "created_at": "2026-11-24T08:36:38.118899+00:00"
+    },
+    {
+      "id": 481,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 8,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/181ccc0bdefcf445fd7aac9277d6683b.mp3",
+        "hash": "181ccc0bdefcf445fd7aac9277d6683b",
+        "name": "Jamie Park",
+        "speaker": "customer",
+        "turn_id": 2,
+        "duration_ms": 5352
+      },
+      "created_at": "2026-11-24T08:36:38.123818+00:00"
+    },
+    {
+      "id": 482,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 9,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 3,
+        "text_said": "Totally understandable. What are you shopping for, just a regular dinner or something special?",
+        "text_heard": "Totally understandable. What are you shopping for, just a regular dinner or something special?",
+        "duration_ms": 4848
+      },
+      "created_at": "2026-11-24T08:36:46.495771+00:00"
+    },
+    {
+      "id": 483,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 10,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/f35433c7d03b2544bba444eb60011d78.mp3",
+        "hash": "f35433c7d03b2544bba444eb60011d78",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 3,
+        "duration_ms": 4848
+      },
+      "created_at": "2026-11-24T08:36:46.500459+00:00"
+    },
+    {
+      "id": 484,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 11,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Jamie Park",
+        "beat_id": "c2",
+        "speaker": "customer",
+        "turn_id": 4,
+        "text_said": "Yeah, actually, it's our anniversary next weekend, so I was thinking of cooking at home.",
+        "text_heard": "Yeah, actually, it's our anniversary next weekend, so I was thinking of cooking at home.",
+        "duration_ms": 4752
+      },
+      "created_at": "2026-11-24T08:36:51.356110+00:00"
+    },
+    {
+      "id": 485,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 12,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/f766613c5d06d7b259cb67b0ad765627.mp3",
+        "hash": "f766613c5d06d7b259cb67b0ad765627",
+        "name": "Jamie Park",
+        "speaker": "customer",
+        "turn_id": 4,
+        "duration_ms": 4752
+      },
+      "created_at": "2026-11-24T08:36:51.362043+00:00"
+    },
+    {
+      "id": 486,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 13,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 5,
+        "text_said": "Happy early anniversary, a home-cooked steak dinner sounds lovely. Before we continue, I can text you a link that shows your cart and what I'm noting as we talk. Want it?",
+        "text_heard": "Happy early anniversary, a home-cooked steak dinner sounds lovely. Before we continue, I can text you a link that shows your cart and what I'm noting as we talk. Want it?",
+        "duration_ms": 9816
+      },
+      "created_at": "2026-11-24T08:36:57.638813+00:00"
+    },
+    {
+      "id": 487,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 14,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/a6e68a8bd59fbd87771147bb54fa795a.mp3",
+        "hash": "a6e68a8bd59fbd87771147bb54fa795a",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 5,
+        "duration_ms": 9816
+      },
+      "created_at": "2026-11-24T08:36:57.642892+00:00"
+    },
+    {
+      "id": 488,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 15,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Jamie Park",
+        "marks": "link_accepted",
+        "beat_id": "c3",
+        "speaker": "customer",
+        "turn_id": 6,
+        "text_said": "Sure, text it to me.",
+        "text_heard": "Sure, text it to me.",
+        "duration_ms": 1704
+      },
+      "created_at": "2026-11-24T08:37:07.466332+00:00"
+    },
+    {
+      "id": 489,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 16,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/07791d7bd1cbc8490627e2d33d9f6006.mp3",
+        "hash": "07791d7bd1cbc8490627e2d33d9f6006",
+        "name": "Jamie Park",
+        "speaker": "customer",
+        "turn_id": 6,
+        "duration_ms": 1704
+      },
+      "created_at": "2026-11-24T08:37:07.471169+00:00"
+    },
+    {
+      "id": 490,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 17,
+      "type": "link.sent",
+      "payload": {
+        "to": "+1 •••-•••-0142",
+        "sms_text": "Fieldstone Provisions: here's your private link for this call: http://<tailscale-ip>:5180/s/um6v••••"
+      },
+      "created_at": "2026-11-24T08:37:10.806502+00:00"
+    },
+    {
+      "id": 491,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 18,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {},
+        "name": "send_link",
+        "summary": "Texted the live link to +1 •••-•••-0142"
+      },
+      "created_at": "2026-11-24T08:37:10.811244+00:00"
+    },
+    {
+      "id": 492,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 19,
+      "type": "link.opened",
+      "payload": {
+        "token_id": 11,
+        "opened_at": "2026-11-24T08:37:10.900320+00:00"
+      },
+      "created_at": "2026-11-24T08:37:10.905641+00:00"
+    },
+    {
+      "id": 493,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 20,
+      "type": "note.added",
+      "payload": {
+        "text": "Shopping for an anniversary dinner at home next weekend."
+      },
+      "created_at": "2026-11-24T08:37:10.920519+00:00"
+    },
+    {
+      "id": 494,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 21,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Shopping for an anniversary dinner at home next weekend."
+        },
+        "name": "add_note",
+        "summary": "Noted: Shopping for an anniversary dinner at home next weekend."
+      },
+      "created_at": "2026-11-24T08:37:10.924562+00:00"
+    },
+    {
+      "id": 495,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 22,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 7,
+        "text_said": "I've just texted you the link. How many ribeyes would you like for the anniversary dinner?",
+        "text_heard": "I've just texted you the link. How many ribeyes would you like for the anniversary dinner?",
+        "duration_ms": 4848
+      },
+      "created_at": "2026-11-24T08:37:12.840155+00:00"
+    },
+    {
+      "id": 496,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 23,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/0af1239683833e75653dfbad3ca5eea3.mp3",
+        "hash": "0af1239683833e75653dfbad3ca5eea3",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 7,
+        "duration_ms": 4848
+      },
+      "created_at": "2026-11-24T08:37:12.844146+00:00"
+    },
+    {
+      "id": 497,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 24,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Jamie Park",
+        "beat_id": "c4",
+        "speaker": "customer",
+        "turn_id": 8,
+        "text_said": "Got it, it's open. So, I'd like two of the ribeyes.",
+        "text_heard": "Got it, it's open. So, I'd like ten of the ribeyes.",
+        "duration_ms": 4152
+      },
+      "created_at": "2026-11-24T08:37:17.700693+00:00"
+    },
+    {
+      "id": 498,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 25,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/43499214d0a197e893fb197c02ae303a.mp3",
+        "hash": "43499214d0a197e893fb197c02ae303a",
+        "name": "Jamie Park",
+        "speaker": "customer",
+        "turn_id": 8,
+        "duration_ms": 4152
+      },
+      "created_at": "2026-11-24T08:37:17.705157+00:00"
+    },
+    {
+      "id": 499,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 26,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "query": "dry-aged ribeye"
+        },
+        "name": "lookup_product",
+        "summary": "Looked up “dry-aged ribeye”: Dry-Aged Ribeye, Steakhouse Gift Box"
+      },
+      "created_at": "2026-11-24T08:37:23.192836+00:00"
+    },
+    {
+      "id": 500,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 27,
+      "type": "state.cart",
+      "payload": {
+        "items": [
+          {
+            "qty": 10,
+            "sku": "FP-RIBEYE-DA16",
+            "name": "Dry-Aged Ribeye",
+            "image_path": "/products/ribeye.svg",
+            "line_total_cents": 72000,
+            "unit_price_cents": 7200
+          }
+        ],
+        "order": null,
+        "item_count": 10,
+        "total_cents": 72000,
+        "free_shipping": true,
+        "shipping_cents": 0,
+        "subtotal_cents": 72000,
+        "amount_to_free_shipping_cents": 0,
+        "free_shipping_threshold_cents": 15000
+      },
+      "created_at": "2026-11-24T08:37:24.570302+00:00"
+    },
+    {
+      "id": 501,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 28,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "qty": 10,
+          "sku": "FP-RIBEYE-DA16"
+        },
+        "name": "add_to_cart",
+        "summary": "Added 10 × Dry-Aged Ribeye to cart"
+      },
+      "created_at": "2026-11-24T08:37:24.575167+00:00"
+    },
+    {
+      "id": 502,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 29,
+      "type": "note.added",
+      "payload": {
+        "text": "Jamie asked for ten dry-aged ribeyes."
+      },
+      "created_at": "2026-11-24T08:37:24.578997+00:00"
+    },
+    {
+      "id": 503,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 30,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Jamie asked for ten dry-aged ribeyes."
+        },
+        "name": "add_note",
+        "summary": "Noted: Jamie asked for ten dry-aged ribeyes."
+      },
+      "created_at": "2026-11-24T08:37:24.583005+00:00"
+    },
+    {
+      "id": 504,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 31,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 9,
+        "text_said": "I've added ten dry-aged ribeyes at seventy-two dollars each, and that gets you free shipping. Can you check it on the link?",
+        "text_heard": "I've added ten dry-aged ribeyes at seventy-two dollars each, and that gets you free shipping. Can you check it on the link?",
+        "duration_ms": 6864
+      },
+      "created_at": "2026-11-24T08:37:25.534977+00:00"
+    },
+    {
+      "id": 505,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 32,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/40a696a5611d80c989c956951c563eb0.mp3",
+        "hash": "40a696a5611d80c989c956951c563eb0",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 9,
+        "duration_ms": 6864
+      },
+      "created_at": "2026-11-24T08:37:25.539008+00:00"
+    },
+    {
+      "id": 506,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 33,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Jamie Park",
+        "beat_id": "c5",
+        "speaker": "customer",
+        "turn_id": 10,
+        "text_said": "Wait, the page says ten. I said two, not ten.",
+        "text_heard": "Wait, the page says ten. I said two, not ten.",
+        "duration_ms": 4056
+      },
+      "created_at": "2026-11-24T08:37:32.409477+00:00"
+    },
+    {
+      "id": 507,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 34,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/a7dbc0a3049b9a6ee884b0c7e0f24b52.mp3",
+        "hash": "a7dbc0a3049b9a6ee884b0c7e0f24b52",
+        "name": "Jamie Park",
+        "speaker": "customer",
+        "turn_id": 10,
+        "duration_ms": 4056
+      },
+      "created_at": "2026-11-24T08:37:32.413960+00:00"
+    },
+    {
+      "id": 508,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 35,
+      "type": "transcript.correction",
+      "payload": {
+        "beat_id": "c4",
+        "turn_id": 8,
+        "corrected_text": "Got it, it's open. So, I'd like two of the ribeyes."
+      },
+      "created_at": "2026-11-24T08:37:32.417835+00:00"
+    },
+    {
+      "id": 509,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 36,
+      "type": "state.cart",
+      "payload": {
+        "items": [
+          {
+            "qty": 2,
+            "sku": "FP-RIBEYE-DA16",
+            "name": "Dry-Aged Ribeye",
+            "image_path": "/products/ribeye.svg",
+            "line_total_cents": 14400,
+            "unit_price_cents": 7200
+          }
+        ],
+        "order": null,
+        "item_count": 2,
+        "total_cents": 15900,
+        "free_shipping": false,
+        "shipping_cents": 1500,
+        "subtotal_cents": 14400,
+        "amount_to_free_shipping_cents": 600,
+        "free_shipping_threshold_cents": 15000
+      },
+      "created_at": "2026-11-24T08:37:38.597267+00:00"
+    },
+    {
+      "id": 510,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 37,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "qty": 2,
+          "sku": "FP-RIBEYE-DA16"
+        },
+        "name": "update_cart_item",
+        "summary": "Changed Dry-Aged Ribeye from 10 to 2"
+      },
+      "created_at": "2026-11-24T08:37:38.601354+00:00"
+    },
+    {
+      "id": 511,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 38,
+      "type": "note.added",
+      "payload": {
+        "text": "Correction: Jamie wants two ribeyes, not ten."
+      },
+      "created_at": "2026-11-24T08:37:38.605019+00:00"
+    },
+    {
+      "id": 512,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 39,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Correction: Jamie wants two ribeyes, not ten."
+        },
+        "name": "add_note",
+        "summary": "Noted: Correction: Jamie wants two ribeyes, not ten."
+      },
+      "created_at": "2026-11-24T08:37:38.608603+00:00"
+    },
+    {
+      "id": 513,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 40,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 11,
+        "text_said": "Sorry about that, I've changed your cart to two ribeyes. Would you like to add our garlic-herb compound butter to go with them?",
+        "text_heard": "Sorry about that, I've changed your cart to two ribeyes. Would you like to add our garlic-herb compound butter to go with them?",
+        "duration_ms": 6264
+      },
+      "created_at": "2026-11-24T08:37:41.137603+00:00"
+    },
+    {
+      "id": 514,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 41,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/488f7bbc380cd134a6f903fc7a80f42f.mp3",
+        "hash": "488f7bbc380cd134a6f903fc7a80f42f",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 11,
+        "duration_ms": 6264
+      },
+      "created_at": "2026-11-24T08:37:41.141990+00:00"
+    },
+    {
+      "id": 515,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 42,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Jamie Park",
+        "beat_id": "c6",
+        "speaker": "customer",
+        "turn_id": 12,
+        "text_said": "Oh, that actually looks good. Yeah, add one of those.",
+        "text_heard": "Oh, that actually looks good. Yeah, add one of those.",
+        "duration_ms": 3816
+      },
+      "created_at": "2026-11-24T08:37:47.413760+00:00"
+    },
+    {
+      "id": 516,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 43,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/da3f274ec0c7a522b800767879144b4b.mp3",
+        "hash": "da3f274ec0c7a522b800767879144b4b",
+        "name": "Jamie Park",
+        "speaker": "customer",
+        "turn_id": 12,
+        "duration_ms": 3816
+      },
+      "created_at": "2026-11-24T08:37:47.418706+00:00"
+    },
+    {
+      "id": 517,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 44,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "query": "garlic-herb compound butter"
+        },
+        "name": "lookup_product",
+        "summary": "Looked up “garlic-herb compound butter”: Garlic-Herb Compound Butter, Steakhouse Gift Box, Filet Mignon"
+      },
+      "created_at": "2026-11-24T08:37:52.860176+00:00"
+    },
+    {
+      "id": 518,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 45,
+      "type": "state.cart",
+      "payload": {
+        "items": [
+          {
+            "qty": 2,
+            "sku": "FP-RIBEYE-DA16",
+            "name": "Dry-Aged Ribeye",
+            "image_path": "/products/ribeye.svg",
+            "line_total_cents": 14400,
+            "unit_price_cents": 7200
+          },
+          {
+            "qty": 1,
+            "sku": "FP-BUTTER-GH",
+            "name": "Garlic-Herb Compound Butter",
+            "image_path": "/products/garlic-herb-butter.svg",
+            "line_total_cents": 1200,
+            "unit_price_cents": 1200
+          }
+        ],
+        "order": null,
+        "item_count": 3,
+        "total_cents": 15600,
+        "free_shipping": true,
+        "shipping_cents": 0,
+        "subtotal_cents": 15600,
+        "amount_to_free_shipping_cents": 0,
+        "free_shipping_threshold_cents": 15000
+      },
+      "created_at": "2026-11-24T08:37:54.758453+00:00"
+    },
+    {
+      "id": 519,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 46,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "qty": 1,
+          "sku": "FP-BUTTER-GH"
+        },
+        "name": "add_to_cart",
+        "summary": "Added 1 × Garlic-Herb Compound Butter to cart"
+      },
+      "created_at": "2026-11-24T08:37:54.762563+00:00"
+    },
+    {
+      "id": 520,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 47,
+      "type": "note.added",
+      "payload": {
+        "text": "Jamie accepted the garlic-herb compound butter, quantity one."
+      },
+      "created_at": "2026-11-24T08:37:54.766703+00:00"
+    },
+    {
+      "id": 521,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 48,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Jamie accepted the garlic-herb compound butter, quantity one."
+        },
+        "name": "add_note",
+        "summary": "Noted: Jamie accepted the garlic-herb compound butter, quantity one."
+      },
+      "created_at": "2026-11-24T08:37:54.770838+00:00"
+    },
+    {
+      "id": 522,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 49,
+      "type": "confirm.requested",
+      "payload": {
+        "cart": {
+          "items": [
+            {
+              "qty": 2,
+              "sku": "FP-RIBEYE-DA16",
+              "name": "Dry-Aged Ribeye",
+              "image_path": "/products/ribeye.svg",
+              "line_total_cents": 14400,
+              "unit_price_cents": 7200
+            },
+            {
+              "qty": 1,
+              "sku": "FP-BUTTER-GH",
+              "name": "Garlic-Herb Compound Butter",
+              "image_path": "/products/garlic-herb-butter.svg",
+              "line_total_cents": 1200,
+              "unit_price_cents": 1200
+            }
+          ],
+          "order": null,
+          "item_count": 3,
+          "total_cents": 15600,
+          "free_shipping": true,
+          "shipping_cents": 0,
+          "subtotal_cents": 15600,
+          "amount_to_free_shipping_cents": 0,
+          "free_shipping_threshold_cents": 15000
+        },
+        "summary": "2 x Dry-Aged Ribeye, 1 x Garlic-Herb Compound Butter"
+      },
+      "created_at": "2026-11-24T08:37:54.780201+00:00"
+    },
+    {
+      "id": 523,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 50,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "summary": "2 x Dry-Aged Ribeye, 1 x Garlic-Herb Compound Butter"
+        },
+        "name": "request_confirmation",
+        "summary": "Asked the customer to confirm: 2 x Dry-Aged Ribeye, 1 x Garlic-Herb Compound Butter"
+      },
+      "created_at": "2026-11-24T08:37:54.784301+00:00"
+    },
+    {
+      "id": 524,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 51,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 13,
+        "text_said": "I've updated your cart to two ribeyes and one compound butter, which brings you to free shipping, pending your confirmation. Please look over the final page on the link and tap Confirm when you're ready.",
+        "text_heard": "I've updated your cart to two ribeyes and one compound butter, which brings you to free shipping, pending your confirmation. Please look over the final page on the link and tap Confirm when you're ready.",
+        "duration_ms": 11712
+      },
+      "created_at": "2026-11-24T08:37:57.824674+00:00"
+    },
+    {
+      "id": 525,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 52,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/6cadc5c9ec730abdb8beacdba6f6c8f6.mp3",
+        "hash": "6cadc5c9ec730abdb8beacdba6f6c8f6",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 13,
+        "duration_ms": 11712
+      },
+      "created_at": "2026-11-24T08:37:57.829857+00:00"
+    },
+    {
+      "id": 526,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 53,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Jamie Park",
+        "action": "confirm",
+        "beat_id": "c7",
+        "speaker": "customer",
+        "turn_id": 14,
+        "text_said": "Okay, everything looks right. Confirming now.",
+        "text_heard": "Okay, everything looks right. Confirming now.",
+        "duration_ms": 2952
+      },
+      "created_at": "2026-11-24T08:38:09.548661+00:00"
+    },
+    {
+      "id": 527,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 54,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/bb7ad4082f7dc6f043b89c5cbdabd3a8.mp3",
+        "hash": "bb7ad4082f7dc6f043b89c5cbdabd3a8",
+        "name": "Jamie Park",
+        "speaker": "customer",
+        "turn_id": 14,
+        "duration_ms": 2952
+      },
+      "created_at": "2026-11-24T08:38:09.553510+00:00"
+    },
+    {
+      "id": 528,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 55,
+      "type": "confirm.received",
+      "payload": {
+        "via": "link"
+      },
+      "created_at": "2026-11-24T08:38:14.015273+00:00"
+    },
+    {
+      "id": 529,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 56,
+      "type": "state.cart",
+      "payload": {
+        "items": [
+          {
+            "qty": 2,
+            "sku": "FP-RIBEYE-DA16",
+            "name": "Dry-Aged Ribeye",
+            "image_path": "/products/ribeye.svg",
+            "line_total_cents": 14400,
+            "unit_price_cents": 7200
+          },
+          {
+            "qty": 1,
+            "sku": "FP-BUTTER-GH",
+            "name": "Garlic-Herb Compound Butter",
+            "image_path": "/products/garlic-herb-butter.svg",
+            "line_total_cents": 1200,
+            "unit_price_cents": 1200
+          }
+        ],
+        "order": {
+          "id": 8,
+          "status": "placed",
+          "total_cents": 15600
+        },
+        "item_count": 3,
+        "total_cents": 15600,
+        "free_shipping": true,
+        "shipping_cents": 0,
+        "subtotal_cents": 15600,
+        "amount_to_free_shipping_cents": 0,
+        "free_shipping_threshold_cents": 15000
+      },
+      "created_at": "2026-11-24T08:38:15.743693+00:00"
+    },
+    {
+      "id": 530,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 57,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {},
+        "name": "place_order",
+        "summary": "Placed order #8 for $156.00"
+      },
+      "created_at": "2026-11-24T08:38:15.747559+00:00"
+    },
+    {
+      "id": 531,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 58,
+      "type": "note.added",
+      "payload": {
+        "text": "Jamie confirmed the order: two ribeyes and one compound butter."
+      },
+      "created_at": "2026-11-24T08:38:15.751240+00:00"
+    },
+    {
+      "id": 532,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 59,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Jamie confirmed the order: two ribeyes and one compound butter."
+        },
+        "name": "add_note",
+        "summary": "Noted: Jamie confirmed the order: two ribeyes and one compound butter."
+      },
+      "created_at": "2026-11-24T08:38:15.756611+00:00"
+    },
+    {
+      "id": 533,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 60,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Ava",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 15,
+        "text_said": "Your order is placed: two dry-aged ribeyes and one compound butter, shipping within 2 business days. Happy anniversary, Jamie, and goodbye!",
+        "text_heard": "Your order is placed: two dry-aged ribeyes and one compound butter, shipping within 2 business days. Happy anniversary, Jamie, and goodbye!",
+        "duration_ms": 9552
+      },
+      "created_at": "2026-11-24T08:38:18.862199+00:00"
+    },
+    {
+      "id": 534,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 61,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/59a2a71651cec9c59516922fc5b50a7b.mp3",
+        "hash": "59a2a71651cec9c59516922fc5b50a7b",
+        "name": "Ava",
+        "speaker": "agent",
+        "turn_id": 15,
+        "duration_ms": 9552
+      },
+      "created_at": "2026-11-24T08:38:18.866662+00:00"
+    },
+    {
+      "id": 535,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 62,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {},
+        "name": "end_call",
+        "summary": "Ended the call"
+      },
+      "created_at": "2026-11-24T08:38:28.424148+00:00"
+    },
+    {
+      "id": 536,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 63,
+      "type": "call.status",
+      "payload": {
+        "reason": "agent_hung_up",
+        "status": "ended"
+      },
+      "created_at": "2026-11-24T08:38:28.438186+00:00"
+    },
+    {
+      "id": 537,
+      "call_id": "ab6abde9-f779-4202-9059-363dabba352b",
+      "seq": 64,
+      "type": "link.revoked",
+      "payload": {
+        "token_id": 11
+      },
+      "created_at": "2026-11-24T08:38:28.449049+00:00"
+    }
+  ]
+}

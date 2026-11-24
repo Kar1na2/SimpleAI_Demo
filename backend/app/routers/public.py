@@ -15,13 +15,14 @@ from collections import defaultdict
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, WebSocket
+from sqlalchemy import select
 
 from app import links
 from app.call import state
 from app.call.scenario import ScenarioError, load_scenario
 from app.db import SessionLocal
 from app.events import EventType, emit, last_seqs
-from app.models import CallSession, LinkToken
+from app.models import CallEvent, CallSession, LinkToken
 from app.streaming import CLOSE_LINK_GONE, CLOSE_NOT_FOUND, stream_events
 
 router = APIRouter(tags=["link"])
@@ -75,13 +76,29 @@ async def call_snapshot(call_id: uuid.UUID, token: LinkToken) -> dict[str, Any]:
             "reservation": None,
             "slots": None,
         }
+        latest = await _latest_state(session, call.id)
         if call.scenario == "order":
-            snap["cart"] = await state.cart_snapshot(session, call.id)
+            snap["cart"] = latest.get(EventType.state_cart) or await state.cart_snapshot(session, call.id)
         elif call.scenario == "reservation" and call.customer_id is not None:
             r = await state.customer_reservation(session, call.customer_id)
-            snap["reservation"] = state.reservation_snapshot(r) if r else None
+            snap["reservation"] = latest.get(EventType.state_reservation) or (state.reservation_snapshot(r) if r else None)
             snap["slots"] = await state.slots_snapshot(session)
     return snap
+
+
+async def _latest_state(session, call_id: uuid.UUID) -> dict[str, dict[str, Any]]:
+    """Payload of the newest state.cart / state.reservation event of this call, by type."""
+    out: dict[str, dict[str, Any]] = {}
+    for etype in (EventType.state_cart, EventType.state_reservation):
+        payload = await session.scalar(
+            select(CallEvent.payload)
+            .where(CallEvent.call_id == call_id, CallEvent.type == etype.value)
+            .order_by(CallEvent.seq.desc())
+            .limit(1)
+        )
+        if payload is not None:
+            out[etype] = payload
+    return out
 
 
 @router.get("/api/s/{token}")

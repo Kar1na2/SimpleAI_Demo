@@ -26,10 +26,9 @@ from sqlalchemy import select, update
 
 from app.call import state
 from app.call.scenario import Scenario
-from app.config import get_settings
 from app.db import SessionLocal
 from app.events import EventType, emit, history, last_seqs
-from app.links import live_url, mask_phone, masked_url
+from app.links import live_url, mask_phone, sms_text
 from app.models import (
     Cart,
     CartItem,
@@ -223,6 +222,7 @@ def _model_cart(snap: dict[str, Any]) -> dict[str, Any]:
         "subtotal": state.money(snap["subtotal_cents"]),
         "shipping": "free" if snap["free_shipping"] else state.money(snap["shipping_cents"]),
         "total": state.money(snap["total_cents"]),
+        "free_shipping_over": state.money(snap["free_shipping_threshold_cents"]),
         "order_status": snap["order"]["status"] if snap["order"] else "not placed",
     }
 
@@ -259,6 +259,18 @@ async def _emit_cart(ctx: ToolContext) -> dict[str, Any]:
     return snap
 
 
+async def _free_shipping_now(ctx: ToolContext) -> bool:
+    async with SessionLocal() as session:
+        return (await state.cart_snapshot(session, ctx.call_id))["free_shipping"]
+
+
+def _cart_result(snap: dict[str, Any], had_free_shipping: bool) -> dict[str, Any]:
+    result: dict[str, Any] = {"cart": _model_cart(snap)}
+    if snap["free_shipping"] and not had_free_shipping:
+        result["free_shipping_unlocked"] = True  # this change crossed the free-shipping line
+    return result
+
+
 async def lookup_product(ctx: ToolContext, args: dict[str, Any]):
     query = _str(args, "query")
     words = {w.rstrip("s") for w in re.findall(r"[a-z]+", query.lower()) if len(w) > 2}
@@ -285,6 +297,7 @@ async def lookup_product(ctx: ToolContext, args: dict[str, Any]):
 
 async def add_to_cart(ctx: ToolContext, args: dict[str, Any]):
     sku, qty = _str(args, "sku"), _int(args, "qty", 1, 99)
+    had_free = await _free_shipping_now(ctx)
     async with SessionLocal() as session, session.begin():
         product = await _product(session, sku)
         cart = await _open_cart(session, ctx)
@@ -295,11 +308,12 @@ async def add_to_cart(ctx: ToolContext, args: dict[str, Any]):
             session.add(CartItem(cart_id=cart.id, product_id=product.id, quantity=qty))
         name = product.name
     snap = await _emit_cart(ctx)
-    return {"cart": _model_cart(snap)}, f"Added {qty} × {name} to cart"
+    return _cart_result(snap, had_free), f"Added {qty} × {name} to cart"
 
 
 async def update_cart_item(ctx: ToolContext, args: dict[str, Any]):
     sku, qty = _str(args, "sku"), _int(args, "qty", 0, 99)
+    had_free = await _free_shipping_now(ctx)
     async with SessionLocal() as session, session.begin():
         product = await _product(session, sku)
         cart = await _open_cart(session, ctx)
@@ -314,7 +328,7 @@ async def update_cart_item(ctx: ToolContext, args: dict[str, Any]):
         name = product.name
     snap = await _emit_cart(ctx)
     summary = f"Removed {name} from cart" if qty == 0 else f"Changed {name} from {before} to {qty}"
-    return {"cart": _model_cart(snap)}, summary
+    return _cart_result(snap, had_free), summary
 
 
 async def remove_cart_item(ctx: ToolContext, args: dict[str, Any]):
@@ -527,12 +541,7 @@ async def send_link(ctx: ToolContext, args: dict[str, Any]):
     if not await _agent_mentioned_link(ctx.call_id):
         log.warning("call %s: send_link called before the agent offered the link", ctx.call_id)
     raw = url.rsplit("/", 1)[1]
-    what = "cart" if ctx.scenario.name == "order" else "reservation"
-    sms = (
-        f"{ctx.scenario.brand}: here's your live link. It shows your {what} and our notes during the call "
-        f"and expires in {get_settings().link_ttl_minutes} min: {masked_url(raw)}"
-    )
-    await emit(ctx.call_id, EventType.link_sent, {"to": to, "sms_text": sms})
+    await emit(ctx.call_id, EventType.link_sent, {"to": to, "sms_text": sms_text(ctx.scenario.brand, raw)})
     return {"status": "sent", "to": to}, f"Texted the live link to {to}"
 
 

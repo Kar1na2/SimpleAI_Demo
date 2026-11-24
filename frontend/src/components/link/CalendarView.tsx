@@ -28,10 +28,14 @@ function monthGrid(isoDate: string) {
   return { label: first.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), weeks }
 }
 
+const pendingFields = (r: Reservation) => new Set<string>(r.pending ? r.changes.map((c) => c.field) : [])
+
 function DayChip({ r, dateIso }: { r: Reservation; dateIso: string }) {
+  const pending = pendingFields(r)
+  const slotPending = pending.has('date') || pending.has('time') // the date chip is about date and time only
   const isNew = r.date === dateIso
   const isOld = r.booked.date === dateIso && r.booked.date !== r.date
-  if (isOld && r.pending)
+  if (isOld && slotPending)
     return (
       <span
         className="mt-1 inline-flex rounded-md border border-dashed border-stone-300 px-1.5 py-0.5 text-[11px] text-stone-400 line-through"
@@ -41,7 +45,7 @@ function DayChip({ r, dateIso }: { r: Reservation; dateIso: string }) {
       </span>
     )
   if (!isNew) return null
-  if (r.pending)
+  if (slotPending)
     return (
       <span
         className="mt-1 inline-flex flex-col items-start rounded-md border border-accent bg-white px-1.5 py-0.5 text-[11px] leading-tight font-medium text-accent animate-fade-in"
@@ -76,20 +80,22 @@ function Calendar({ r, slotDates, checking }: { r: Reservation; slotDates: Set<s
           <span className="inline-flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-sm border border-accent bg-white" /> Pending change
           </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-sm border border-dashed border-accent" /> Checking
+          </span>
         </div>
       </div>
       <div className="overflow-hidden rounded-xl border border-black/[0.07]">
+        <div className="grid grid-cols-7 text-[10px] font-medium tracking-wider text-stone-500 uppercase">
+          <div className="col-span-5" />
+          <div className="col-span-2 bg-black/[0.045] px-2.5 pt-1.5 text-center" data-testid="weekend-label">
+            Weekend
+          </div>
+        </div>
         <div className="grid grid-cols-7 border-b border-black/[0.07] text-[11px] font-medium tracking-wide text-stone-500 uppercase">
           {DOW.map((d, i) => (
             <div key={d} className={`px-2.5 py-1.5 ${i >= 5 ? 'bg-black/[0.045]' : ''}`}>
-              <div className="flex items-center justify-between">
-                <span>{d}</span>
-                {i >= 5 && (
-                  <span className="rounded bg-white/80 px-1 text-[9px] tracking-wider text-stone-500" data-testid="weekend-label">
-                    Weekend
-                  </span>
-                )}
-              </div>
+              {d}
             </div>
           ))}
         </div>
@@ -111,6 +117,11 @@ function Calendar({ r, slotDates, checking }: { r: Reservation; slotDates: Set<s
                   {isChecking && (
                     <span className="pointer-events-none absolute inset-[3px] rounded-lg border border-dashed border-accent animate-fade-in" aria-hidden />
                   )}
+                  {isChecking && (
+                    <span className="absolute bottom-1.5 left-2.5 text-[10px] font-medium tracking-wide text-accent uppercase" data-testid={`cal-checking-${d.iso}`}>
+                      Checking
+                    </span>
+                  )}
                   <div
                     className={`relative text-xs tabular-nums ${isReservation ? 'font-semibold text-accent' : !d.inMonth ? 'text-stone-300' : bookable ? 'font-medium text-stone-800' : 'text-stone-400'}`}
                   >
@@ -128,6 +139,8 @@ function Calendar({ r, slotDates, checking }: { r: Reservation; slotDates: Set<s
 }
 
 function DetailsCard({ r, changes }: { r: Reservation; changes: Record<string, number> }) {
+  const pending = pendingFields(r)
+  const mark = (field: string) => (pending.has(field) ? 'underline decoration-accent decoration-dotted decoration-2 underline-offset-4' : '')
   const flash = (field: string) =>
     changes[field] ? (
       <span key={changes[field]} className="pointer-events-none absolute -inset-x-1.5 -inset-y-0.5 rounded-md animate-flash-amber" aria-hidden />
@@ -139,17 +152,17 @@ function DetailsCard({ r, changes }: { r: Reservation; changes: Record<string, n
       <div className="text-[17px] font-semibold tracking-tight text-stone-900">
         <span className="relative" data-testid="detail-party">
           {flash('party_size')}
-          <span className="relative">Party of {r.party_size}</span>
+          <span className={`relative ${mark('party_size')}`} data-pending={pending.has('party_size') || undefined}>Party of {r.party_size}</span>
         </span>
         <span className="mx-2 text-stone-300">·</span>
         <span className="relative" data-testid="detail-date">
           {flash('date')}
-          <span className="relative">{shortDate(r.date)}</span>
+          <span className={`relative ${mark('date')}`} data-pending={pending.has('date') || undefined}>{shortDate(r.date)}</span>
         </span>
         <span className="mx-2 text-stone-300">·</span>
         <span className="relative" data-testid="detail-time">
           {flash('time')}
-          <span className="relative">{clock(r.time)}</span>
+          <span className={`relative ${mark('time')}`} data-pending={pending.has('time') || undefined}>{clock(r.time)}</span>
         </span>
       </div>
       <span

@@ -180,7 +180,7 @@ export function linkReducer(state: LinkState, action: LinkAction): LinkState {
           seq: e.seq,
           date: String(p.data.date),
           slots: p.data.slots,
-          offered: p.data.nearest_open_to_your_time ?? [],
+          offered: p.data.your_time && p.data.your_time.status !== 'open' ? (p.data.nearest_open_to_your_time ?? []) : [],
         }
       }
       break

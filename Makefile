@@ -1,4 +1,4 @@
-.PHONY: install db-up db-down db-reset seed backend frontend test call screenshots live remote-info
+.PHONY: install db-up db-down db-reset seed backend frontend test call screenshots director-screenshots live remote-info
 
 install:            ## Install backend (uv) and frontend (npm) dependencies
 	cd backend && uv sync
@@ -25,8 +25,8 @@ frontend:           ## Vite on 0.0.0.0:5180 (FRONTEND_PORT); proxies /api and /w
 test:               ## Backend tests (separate simpleai_test DB; no LLM calls)
 	cd backend && uv run pytest -q
 
-call:               ## Scripted call with the live agent: make call S=order SPEED=4 [MANUAL=1]
-	cd backend && uv run python -m app.call.run $(or $(S),order) --speed $(or $(SPEED),1) $(if $(MANUAL),--manual)
+call:               ## Scripted call with the live agent: make call S=order SPEED=4 [MANUAL=1] [TTS=1]
+	cd backend && uv run python -m app.call.run $(or $(S),order) --speed $(or $(SPEED),1) $(if $(MANUAL),--manual) $(if $(TTS),--tts)
 
 screenshots:        ## Link page screenshots for both scenarios (needs `make backend` + `make frontend`)
 	cd frontend && npm run screenshots
@@ -36,3 +36,6 @@ live:               ## Start a call on the running backend, print its link: make
 
 remote-info:        ## Networking mode, Tailscale URLs, and the PowerShell command to expose port 5180
 	scripts/remote-info.sh
+
+director-screenshots: ## Replay each starred take in the director (headless, auto-confirm) and screenshot it
+	cd frontend && node scripts/director-screenshots.mjs

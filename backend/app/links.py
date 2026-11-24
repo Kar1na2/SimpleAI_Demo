@@ -55,6 +55,11 @@ def masked_url(raw: str) -> str:
     return link_url(f"{raw[:4]}••••")
 
 
+def sms_text(brand: str, raw: str) -> str:
+    """The (simulated) SMS that carries the link. The token is masked: only its first 4 characters show."""
+    return f"{brand}: here's your private link for this call: {masked_url(raw)}"
+
+
 def mask_phone(phone: str | None) -> str:
     digits = re.sub(r"\D", "", phone or "")
     if len(digits) < 4:

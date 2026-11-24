@@ -1,0 +1,1161 @@
+{
+  "scenario": "reservation",
+  "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+  "mode": "auto",
+  "speed": 1.0,
+  "tts": true,
+  "started_at": "2026-11-24T08:44:17.070370+00:00",
+  "duration_s": 95.03,
+  "passed": true,
+  "error": null,
+  "nudges": [],
+  "checks": [
+    {
+      "label": "call finished without error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "agent spoke its wrap-up after the Confirm click (no silent hang-up)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "no 'set/booked/placed/done/confirmed' before the Confirm click",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "reservation confirmed, party 5, 2026-12-04 19:30",
+      "ok": true,
+      "detail": "('confirmed', 5, '2026-12-04', '19:30')"
+    },
+    {
+      "label": "exactly one confirm.requested",
+      "ok": true,
+      "detail": "got 1"
+    },
+    {
+      "label": "zero silence nudges",
+      "ok": true,
+      "detail": "before "
+    },
+    {
+      "label": "link minted right after connected",
+      "ok": true,
+      "detail": "connected seq=2, minted seq=3"
+    },
+    {
+      "label": "link sent after the customer said yes (c2)",
+      "ok": true,
+      "detail": "yes seq=12, sent seq=14"
+    },
+    {
+      "label": "token revoked (DB + link.revoked event)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "GET /api/s/{token} returns 410 after the call",
+      "ok": true,
+      "detail": "got 410"
+    }
+  ],
+  "usage": {
+    "requests": 15,
+    "input_tokens": 44,
+    "output_tokens": 927,
+    "cache_creation_input_tokens": 2415,
+    "cache_read_input_tokens": 52187,
+    "model": "claude-sonnet-5-5",
+    "cost_usd": 0.0206142
+  },
+  "unspoken_notes": [],
+  "audio": {
+    "611615ea54ca3569a96b61443df2ed01": {
+      "hash": "611615ea54ca3569a96b61443df2ed01",
+      "url": "/api/audio/611615ea54ca3569a96b61443df2ed01.mp3",
+      "duration_ms": 4368,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Thanks for calling Juniper Table, this is Leo. How can I help?"
+    },
+    "6092c4a53480d4e2fa655d7b92c6f2fa": {
+      "hash": "6092c4a53480d4e2fa655d7b92c6f2fa",
+      "url": "/api/audio/6092c4a53480d4e2fa655d7b92c6f2fa.mp3",
+      "duration_ms": 4800,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Hi, I have a reservation and I need to change it. We've got one more person coming."
+    },
+    "cbb31d4bf2443d9441446a1d88f0db65": {
+      "hash": "cbb31d4bf2443d9441446a1d88f0db65",
+      "url": "/api/audio/cbb31d4bf2443d9441446a1d88f0db65.mp3",
+      "duration_ms": 8112,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Hi Daniel. I can make that five instead of four. I can text you a link that shows your reservation and what I'm noting as we talk. Want it?"
+    },
+    "c46b7bb3eb21c717cd9ddf6676742572": {
+      "hash": "c46b7bb3eb21c717cd9ddf6676742572",
+      "url": "/api/audio/c46b7bb3eb21c717cd9ddf6676742572.mp3",
+      "duration_ms": 1920,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Yeah, sure, send it."
+    },
+    "e07bc2ddcbe9e2ad1a4727ed1a8a3682": {
+      "hash": "e07bc2ddcbe9e2ad1a4727ed1a8a3682",
+      "url": "/api/audio/e07bc2ddcbe9e2ad1a4727ed1a8a3682.mp3",
+      "duration_ms": 9552,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "I've updated your reservation to five people on Saturday, December fifth at seven, pending your confirmation. Is there anything else you'd like to change?"
+    },
+    "a59cd5c7cb2065883c7ad93fb210e6ac": {
+      "hash": "a59cd5c7cb2065883c7ad93fb210e6ac",
+      "url": "/api/audio/a59cd5c7cb2065883c7ad93fb210e6ac.mp3",
+      "duration_ms": 7152,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Okay, I see it. Oh, wait. I didn't realize the fifth is a Saturday. Can we move it a day before, to Friday?"
+    },
+    "ab1b8045a0a62f45bbcd7b3efcc1bdc2": {
+      "hash": "ab1b8045a0a62f45bbcd7b3efcc1bdc2",
+      "url": "/api/audio/ab1b8045a0a62f45bbcd7b3efcc1bdc2.mp3",
+      "duration_ms": 6552,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Friday, December fourth is full at seven. I can do six thirty or seven thirty instead. Which would you like?"
+    },
+    "b7175b0a4afdd267fd16a6f870bcef6a": {
+      "hash": "b7175b0a4afdd267fd16a6f870bcef6a",
+      "url": "/api/audio/b7175b0a4afdd267fd16a6f870bcef6a.mp3",
+      "duration_ms": 1704,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Seven thirty works."
+    },
+    "e69bdde62cf13f3542901f16c2e3a7e0": {
+      "hash": "e69bdde62cf13f3542901f16c2e3a7e0",
+      "url": "/api/audio/e69bdde62cf13f3542901f16c2e3a7e0.mp3",
+      "duration_ms": 9720,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "I've updated your reservation to five people on Friday, December fourth at seven thirty, pending your confirmation. Is there anything else you'd like to change?"
+    },
+    "f609a523d63b174906e2d37ceb3f25e0": {
+      "hash": "f609a523d63b174906e2d37ceb3f25e0",
+      "url": "/api/audio/f609a523d63b174906e2d37ceb3f25e0.mp3",
+      "duration_ms": 2256,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "No, that's everything."
+    },
+    "f3bf93ec96bf883b0eae027a5d8dee27": {
+      "hash": "f3bf93ec96bf883b0eae027a5d8dee27",
+      "url": "/api/audio/f3bf93ec96bf883b0eae027a5d8dee27.mp3",
+      "duration_ms": 4752,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Please take a look at the final page on your link and tap Confirm when you're ready."
+    },
+    "e79f681a1d048029718e34d35de3d190": {
+      "hash": "e79f681a1d048029718e34d35de3d190",
+      "url": "/api/audio/e79f681a1d048029718e34d35de3d190.mp3",
+      "duration_ms": 1920,
+      "speaker": "customer",
+      "model": "gpt-4o-mini-tts",
+      "voice": "cedar",
+      "instructions": "Casual, friendly, slightly informal person on a phone call. Relaxed, natural pace.",
+      "text": "Looks right. Confirming."
+    },
+    "7009417f18857ad0dc1fd98fe80710c0": {
+      "hash": "7009417f18857ad0dc1fd98fe80710c0",
+      "url": "/api/audio/7009417f18857ad0dc1fd98fe80710c0.mp3",
+      "duration_ms": 7920,
+      "speaker": "agent",
+      "model": "gpt-4o-mini-tts",
+      "voice": "marin",
+      "instructions": "Warm, upbeat, professional phone representative. Natural, conversational pace. Friendly and clear, never rushed.",
+      "text": "Your reservation is confirmed for five people on Friday, December fourth at seven thirty. Thanks, Daniel, we'll see you then!"
+    }
+  },
+  "events": [
+    {
+      "id": 779,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 1,
+      "type": "call.status",
+      "payload": {
+        "status": "ringing"
+      },
+      "created_at": "2026-11-24T08:44:17.098382+00:00"
+    },
+    {
+      "id": 780,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 2,
+      "type": "call.status",
+      "payload": {
+        "status": "connected"
+      },
+      "created_at": "2026-11-24T08:44:19.110602+00:00"
+    },
+    {
+      "id": 781,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 3,
+      "type": "link.minted",
+      "payload": {
+        "token_id": 17,
+        "expires_at": "2026-11-24T09:14:19.114971+00:00"
+      },
+      "created_at": "2026-11-24T08:44:19.120619+00:00"
+    },
+    {
+      "id": 784,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 4,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Leo",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 1,
+        "text_said": "Thanks for calling Juniper Table, this is Leo. How can I help?",
+        "text_heard": "Thanks for calling Juniper Table, this is Leo. How can I help?",
+        "duration_ms": 4368
+      },
+      "created_at": "2026-11-24T08:44:19.780340+00:00"
+    },
+    {
+      "id": 785,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 5,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/611615ea54ca3569a96b61443df2ed01.mp3",
+        "hash": "611615ea54ca3569a96b61443df2ed01",
+        "name": "Leo",
+        "speaker": "agent",
+        "turn_id": 1,
+        "duration_ms": 4368
+      },
+      "created_at": "2026-11-24T08:44:19.784967+00:00"
+    },
+    {
+      "id": 786,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 6,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Daniel Cho",
+        "beat_id": "c1",
+        "speaker": "customer",
+        "turn_id": 2,
+        "text_said": "Hi, I have a reservation and I need to change it. We've got one more person coming.",
+        "text_heard": "Hi, I have a reservation and I need to change it. We've got one more person coming.",
+        "duration_ms": 4800
+      },
+      "created_at": "2026-11-24T08:44:24.159917+00:00"
+    },
+    {
+      "id": 787,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 7,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/6092c4a53480d4e2fa655d7b92c6f2fa.mp3",
+        "hash": "6092c4a53480d4e2fa655d7b92c6f2fa",
+        "name": "Daniel Cho",
+        "speaker": "customer",
+        "turn_id": 2,
+        "duration_ms": 4800
+      },
+      "created_at": "2026-11-24T08:44:24.166393+00:00"
+    },
+    {
+      "id": 790,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 8,
+      "type": "state.reservation",
+      "payload": {
+        "id": 7,
+        "date": "2026-12-05",
+        "time": "19:00",
+        "booked": {
+          "date": "2026-12-05",
+          "time": "19:00",
+          "weekday": "Saturday",
+          "party_size": 4
+        },
+        "status": "booked",
+        "changes": [],
+        "pending": false,
+        "weekday": "Saturday",
+        "party_size": 4,
+        "customer_name": "Daniel Cho"
+      },
+      "created_at": "2026-11-24T08:44:29.681942+00:00"
+    },
+    {
+      "id": 791,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 9,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {},
+        "name": "get_reservation",
+        "summary": "Found Daniel Cho's reservation: 4 people, Sat Dec 5, 7:00 PM"
+      },
+      "created_at": "2026-11-24T08:44:29.687037+00:00"
+    },
+    {
+      "id": 792,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 10,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Leo",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 3,
+        "text_said": "Hi Daniel. I can make that five instead of four. I can text you a link that shows your reservation and what I'm noting as we talk. Want it?",
+        "text_heard": "Hi Daniel. I can make that five instead of four. I can text you a link that shows your reservation and what I'm noting as we talk. Want it?",
+        "duration_ms": 8112
+      },
+      "created_at": "2026-11-24T08:44:32.196207+00:00"
+    },
+    {
+      "id": 793,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 11,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/cbb31d4bf2443d9441446a1d88f0db65.mp3",
+        "hash": "cbb31d4bf2443d9441446a1d88f0db65",
+        "name": "Leo",
+        "speaker": "agent",
+        "turn_id": 3,
+        "duration_ms": 8112
+      },
+      "created_at": "2026-11-24T08:44:32.201278+00:00"
+    },
+    {
+      "id": 803,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 12,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Daniel Cho",
+        "marks": "link_accepted",
+        "beat_id": "c2",
+        "speaker": "customer",
+        "turn_id": 4,
+        "text_said": "Yeah, sure, send it.",
+        "text_heard": "Yeah, sure, send it.",
+        "duration_ms": 1920
+      },
+      "created_at": "2026-11-24T08:44:40.320769+00:00"
+    },
+    {
+      "id": 804,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 13,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/c46b7bb3eb21c717cd9ddf6676742572.mp3",
+        "hash": "c46b7bb3eb21c717cd9ddf6676742572",
+        "name": "Daniel Cho",
+        "speaker": "customer",
+        "turn_id": 4,
+        "duration_ms": 1920
+      },
+      "created_at": "2026-11-24T08:44:40.325353+00:00"
+    },
+    {
+      "id": 807,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 14,
+      "type": "link.sent",
+      "payload": {
+        "to": "+1 •••-•••-0187",
+        "sms_text": "Juniper Table: here's your private link for this call: http://<tailscale-ip>:5180/s/HgMf••••"
+      },
+      "created_at": "2026-11-24T08:44:43.124858+00:00"
+    },
+    {
+      "id": 808,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 15,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {},
+        "name": "send_link",
+        "summary": "Texted the live link to +1 •••-•••-0187"
+      },
+      "created_at": "2026-11-24T08:44:43.129143+00:00"
+    },
+    {
+      "id": 809,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 16,
+      "type": "link.opened",
+      "payload": {
+        "token_id": 17,
+        "opened_at": "2026-11-24T08:44:43.234017+00:00"
+      },
+      "created_at": "2026-11-24T08:44:43.239617+00:00"
+    },
+    {
+      "id": 810,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 17,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "date": "2026-12-05"
+        },
+        "data": {
+          "day": "Saturday, December 5",
+          "date": "2026-12-05",
+          "slots": [
+            {
+              "time": "17:00",
+              "status": "open"
+            },
+            {
+              "time": "17:30",
+              "status": "open"
+            },
+            {
+              "time": "18:00",
+              "status": "open"
+            },
+            {
+              "time": "18:30",
+              "status": "open"
+            },
+            {
+              "time": "19:00",
+              "status": "open"
+            },
+            {
+              "time": "19:30",
+              "status": "open"
+            },
+            {
+              "time": "20:00",
+              "status": "open"
+            },
+            {
+              "time": "20:30",
+              "status": "open"
+            },
+            {
+              "time": "21:00",
+              "status": "open"
+            }
+          ],
+          "your_time": {
+            "time": "19:00",
+            "status": "open"
+          },
+          "nearest_open_to_your_time": [
+            "18:30",
+            "19:30"
+          ]
+        },
+        "name": "check_availability",
+        "summary": "Checked Sat Dec 5: 9 open times"
+      },
+      "created_at": "2026-11-24T08:44:43.261840+00:00"
+    },
+    {
+      "id": 811,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 18,
+      "type": "state.reservation",
+      "payload": {
+        "id": 7,
+        "date": "2026-12-05",
+        "time": "19:00",
+        "booked": {
+          "date": "2026-12-05",
+          "time": "19:00",
+          "weekday": "Saturday",
+          "party_size": 4
+        },
+        "status": "pending_change",
+        "changes": [
+          {
+            "to": 5,
+            "from": 4,
+            "field": "party_size"
+          }
+        ],
+        "pending": true,
+        "weekday": "Saturday",
+        "party_size": 5,
+        "customer_name": "Daniel Cho"
+      },
+      "created_at": "2026-11-24T08:44:44.369497+00:00"
+    },
+    {
+      "id": 812,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 19,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "party_size": 5
+        },
+        "name": "update_reservation",
+        "summary": "Changed party size from 4 to 5"
+      },
+      "created_at": "2026-11-24T08:44:44.373111+00:00"
+    },
+    {
+      "id": 813,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 20,
+      "type": "note.added",
+      "payload": {
+        "text": "Party size change requested: 4 to 5, Saturday, December 5 at 7:00 PM."
+      },
+      "created_at": "2026-11-24T08:44:44.378927+00:00"
+    },
+    {
+      "id": 814,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 21,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Party size change requested: 4 to 5, Saturday, December 5 at 7:00 PM."
+        },
+        "name": "add_note",
+        "summary": "Noted: Party size change requested: 4 to 5, Saturday, December 5 at 7:00 PM."
+      },
+      "created_at": "2026-11-24T08:44:44.383146+00:00"
+    },
+    {
+      "id": 815,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 22,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Leo",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 5,
+        "text_said": "I've updated your reservation to five people on Saturday, December fifth at seven, pending your confirmation. Is there anything else you'd like to change?",
+        "text_heard": "I've updated your reservation to five people on Saturday, December fifth at seven, pending your confirmation. Is there anything else you'd like to change?",
+        "duration_ms": 9552
+      },
+      "created_at": "2026-11-24T08:44:47.033090+00:00"
+    },
+    {
+      "id": 816,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 23,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/e07bc2ddcbe9e2ad1a4727ed1a8a3682.mp3",
+        "hash": "e07bc2ddcbe9e2ad1a4727ed1a8a3682",
+        "name": "Leo",
+        "speaker": "agent",
+        "turn_id": 5,
+        "duration_ms": 9552
+      },
+      "created_at": "2026-11-24T08:44:47.037869+00:00"
+    },
+    {
+      "id": 827,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 24,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Daniel Cho",
+        "beat_id": "c3",
+        "speaker": "customer",
+        "turn_id": 6,
+        "text_said": "Okay, I see it. Oh, wait. I didn't realize the fifth is a Saturday. Can we move it a day before, to Friday?",
+        "text_heard": "Okay, I see it. Oh, wait. I didn't realize the fifth is a Saturday. Can we move it a day before, to Friday?",
+        "duration_ms": 7152
+      },
+      "created_at": "2026-11-24T08:44:56.596761+00:00"
+    },
+    {
+      "id": 828,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 25,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/a59cd5c7cb2065883c7ad93fb210e6ac.mp3",
+        "hash": "a59cd5c7cb2065883c7ad93fb210e6ac",
+        "name": "Daniel Cho",
+        "speaker": "customer",
+        "turn_id": 6,
+        "duration_ms": 7152
+      },
+      "created_at": "2026-11-24T08:44:56.601096+00:00"
+    },
+    {
+      "id": 835,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 26,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "date": "2026-12-04"
+        },
+        "data": {
+          "day": "Friday, December 4",
+          "date": "2026-12-04",
+          "slots": [
+            {
+              "time": "17:00",
+              "status": "open"
+            },
+            {
+              "time": "17:30",
+              "status": "open"
+            },
+            {
+              "time": "18:00",
+              "status": "open"
+            },
+            {
+              "time": "18:30",
+              "status": "open"
+            },
+            {
+              "time": "19:00",
+              "status": "full"
+            },
+            {
+              "time": "19:30",
+              "status": "open"
+            },
+            {
+              "time": "20:00",
+              "status": "open"
+            },
+            {
+              "time": "20:30",
+              "status": "open"
+            },
+            {
+              "time": "21:00",
+              "status": "open"
+            }
+          ],
+          "your_time": {
+            "time": "19:00",
+            "status": "full"
+          },
+          "nearest_open_to_your_time": [
+            "18:30",
+            "19:30"
+          ]
+        },
+        "name": "check_availability",
+        "summary": "Checked Fri Dec 4: 7:00 PM is full; nearest open 6:30 PM and 7:30 PM"
+      },
+      "created_at": "2026-11-24T08:45:04.441931+00:00"
+    },
+    {
+      "id": 836,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 27,
+      "type": "note.added",
+      "payload": {
+        "text": "Asked to move to Friday, December 4; 7:00 PM is full. Offered 6:30 or 7:30 PM."
+      },
+      "created_at": "2026-11-24T08:45:05.354839+00:00"
+    },
+    {
+      "id": 837,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 28,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Asked to move to Friday, December 4; 7:00 PM is full. Offered 6:30 or 7:30 PM."
+        },
+        "name": "add_note",
+        "summary": "Noted: Asked to move to Friday, December 4; 7:00 PM is full. Offered 6:30 or 7:30 PM."
+      },
+      "created_at": "2026-11-24T08:45:05.360724+00:00"
+    },
+    {
+      "id": 838,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 29,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Leo",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 7,
+        "text_said": "Friday, December fourth is full at seven. I can do six thirty or seven thirty instead. Which would you like?",
+        "text_heard": "Friday, December fourth is full at seven. I can do six thirty or seven thirty instead. Which would you like?",
+        "duration_ms": 6552
+      },
+      "created_at": "2026-11-24T08:45:07.663292+00:00"
+    },
+    {
+      "id": 839,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 30,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/ab1b8045a0a62f45bbcd7b3efcc1bdc2.mp3",
+        "hash": "ab1b8045a0a62f45bbcd7b3efcc1bdc2",
+        "name": "Leo",
+        "speaker": "agent",
+        "turn_id": 7,
+        "duration_ms": 6552
+      },
+      "created_at": "2026-11-24T08:45:07.668180+00:00"
+    },
+    {
+      "id": 851,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 31,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Daniel Cho",
+        "beat_id": "c4",
+        "speaker": "customer",
+        "turn_id": 8,
+        "text_said": "Seven thirty works.",
+        "text_heard": "Seven thirty works.",
+        "duration_ms": 1704
+      },
+      "created_at": "2026-11-24T08:45:14.228674+00:00"
+    },
+    {
+      "id": 852,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 32,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/b7175b0a4afdd267fd16a6f870bcef6a.mp3",
+        "hash": "b7175b0a4afdd267fd16a6f870bcef6a",
+        "name": "Daniel Cho",
+        "speaker": "customer",
+        "turn_id": 8,
+        "duration_ms": 1704
+      },
+      "created_at": "2026-11-24T08:45:14.233474+00:00"
+    },
+    {
+      "id": 853,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 33,
+      "type": "state.reservation",
+      "payload": {
+        "id": 7,
+        "date": "2026-12-04",
+        "time": "19:30",
+        "booked": {
+          "date": "2026-12-05",
+          "time": "19:00",
+          "weekday": "Saturday",
+          "party_size": 4
+        },
+        "status": "pending_change",
+        "changes": [
+          {
+            "to": 5,
+            "from": 4,
+            "field": "party_size"
+          },
+          {
+            "to": "2026-12-04",
+            "from": "2026-12-05",
+            "field": "date"
+          },
+          {
+            "to": "19:30",
+            "from": "19:00",
+            "field": "time"
+          }
+        ],
+        "pending": true,
+        "weekday": "Friday",
+        "party_size": 5,
+        "customer_name": "Daniel Cho"
+      },
+      "created_at": "2026-11-24T08:45:17.163160+00:00"
+    },
+    {
+      "id": 854,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 34,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "date": "2026-12-04",
+          "time": "19:30"
+        },
+        "name": "update_reservation",
+        "summary": "Changed time from Sat Dec 5, 7:00 PM to Fri Dec 4, 7:30 PM"
+      },
+      "created_at": "2026-11-24T08:45:17.167769+00:00"
+    },
+    {
+      "id": 855,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 35,
+      "type": "note.added",
+      "payload": {
+        "text": "Chose Friday, December 4 at 7:30 PM for 5 people."
+      },
+      "created_at": "2026-11-24T08:45:17.171232+00:00"
+    },
+    {
+      "id": 856,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 36,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "text": "Chose Friday, December 4 at 7:30 PM for 5 people."
+        },
+        "name": "add_note",
+        "summary": "Noted: Chose Friday, December 4 at 7:30 PM for 5 people."
+      },
+      "created_at": "2026-11-24T08:45:17.175271+00:00"
+    },
+    {
+      "id": 857,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 37,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Leo",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 9,
+        "text_said": "I've updated your reservation to five people on Friday, December fourth at seven thirty, pending your confirmation. Is there anything else you'd like to change?",
+        "text_heard": "I've updated your reservation to five people on Friday, December fourth at seven thirty, pending your confirmation. Is there anything else you'd like to change?",
+        "duration_ms": 9720
+      },
+      "created_at": "2026-11-24T08:45:17.918979+00:00"
+    },
+    {
+      "id": 858,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 38,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/e69bdde62cf13f3542901f16c2e3a7e0.mp3",
+        "hash": "e69bdde62cf13f3542901f16c2e3a7e0",
+        "name": "Leo",
+        "speaker": "agent",
+        "turn_id": 9,
+        "duration_ms": 9720
+      },
+      "created_at": "2026-11-24T08:45:17.923750+00:00"
+    },
+    {
+      "id": 861,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 39,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Daniel Cho",
+        "beat_id": "c5",
+        "speaker": "customer",
+        "turn_id": 10,
+        "text_said": "No, that's everything.",
+        "text_heard": "No, that's everything.",
+        "duration_ms": 2256
+      },
+      "created_at": "2026-11-24T08:45:27.650843+00:00"
+    },
+    {
+      "id": 862,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 40,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/f609a523d63b174906e2d37ceb3f25e0.mp3",
+        "hash": "f609a523d63b174906e2d37ceb3f25e0",
+        "name": "Daniel Cho",
+        "speaker": "customer",
+        "turn_id": 10,
+        "duration_ms": 2256
+      },
+      "created_at": "2026-11-24T08:45:27.654971+00:00"
+    },
+    {
+      "id": 863,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 41,
+      "type": "confirm.requested",
+      "payload": {
+        "summary": "5 people, Friday, December 4 at 7:30 PM",
+        "reservation": {
+          "id": 7,
+          "date": "2026-12-04",
+          "time": "19:30",
+          "booked": {
+            "date": "2026-12-05",
+            "time": "19:00",
+            "weekday": "Saturday",
+            "party_size": 4
+          },
+          "status": "pending_change",
+          "changes": [
+            {
+              "to": 5,
+              "from": 4,
+              "field": "party_size"
+            },
+            {
+              "to": "2026-12-04",
+              "from": "2026-12-05",
+              "field": "date"
+            },
+            {
+              "to": "19:30",
+              "from": "19:00",
+              "field": "time"
+            }
+          ],
+          "pending": true,
+          "weekday": "Friday",
+          "party_size": 5,
+          "customer_name": "Daniel Cho"
+        }
+      },
+      "created_at": "2026-11-24T08:45:30.867447+00:00"
+    },
+    {
+      "id": 864,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 42,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {
+          "summary": "5 people, Friday, December 4 at 7:30 PM"
+        },
+        "name": "request_confirmation",
+        "summary": "Asked the customer to confirm: 5 people, Friday, December 4 at 7:30 PM"
+      },
+      "created_at": "2026-11-24T08:45:30.871744+00:00"
+    },
+    {
+      "id": 870,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 43,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Leo",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 11,
+        "text_said": "Please take a look at the final page on your link and tap Confirm when you're ready.",
+        "text_heard": "Please take a look at the final page on your link and tap Confirm when you're ready.",
+        "duration_ms": 4752
+      },
+      "created_at": "2026-11-24T08:45:32.686062+00:00"
+    },
+    {
+      "id": 871,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 44,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/f3bf93ec96bf883b0eae027a5d8dee27.mp3",
+        "hash": "f3bf93ec96bf883b0eae027a5d8dee27",
+        "name": "Leo",
+        "speaker": "agent",
+        "turn_id": 11,
+        "duration_ms": 4752
+      },
+      "created_at": "2026-11-24T08:45:32.691390+00:00"
+    },
+    {
+      "id": 874,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 45,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Daniel Cho",
+        "action": "confirm",
+        "beat_id": "c6",
+        "speaker": "customer",
+        "turn_id": 12,
+        "text_said": "Looks right. Confirming.",
+        "text_heard": "Looks right. Confirming.",
+        "duration_ms": 1920
+      },
+      "created_at": "2026-11-24T08:45:37.450832+00:00"
+    },
+    {
+      "id": 875,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 46,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/e79f681a1d048029718e34d35de3d190.mp3",
+        "hash": "e79f681a1d048029718e34d35de3d190",
+        "name": "Daniel Cho",
+        "speaker": "customer",
+        "turn_id": 12,
+        "duration_ms": 1920
+      },
+      "created_at": "2026-11-24T08:45:37.455478+00:00"
+    },
+    {
+      "id": 876,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 47,
+      "type": "confirm.received",
+      "payload": {
+        "via": "link"
+      },
+      "created_at": "2026-11-24T08:45:40.886288+00:00"
+    },
+    {
+      "id": 877,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 48,
+      "type": "state.reservation",
+      "payload": {
+        "id": 7,
+        "date": "2026-12-04",
+        "time": "19:30",
+        "booked": {
+          "date": "2026-12-04",
+          "time": "19:30",
+          "weekday": "Friday",
+          "party_size": 5
+        },
+        "status": "confirmed",
+        "changes": [],
+        "pending": false,
+        "weekday": "Friday",
+        "party_size": 5,
+        "customer_name": "Daniel Cho"
+      },
+      "created_at": "2026-11-24T08:45:41.549394+00:00"
+    },
+    {
+      "id": 878,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 49,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {},
+        "name": "confirm_reservation",
+        "summary": "Confirmed reservation: 5 people, Fri Dec 4, 7:30 PM"
+      },
+      "created_at": "2026-11-24T08:45:41.553667+00:00"
+    },
+    {
+      "id": 882,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 50,
+      "type": "transcript.turn",
+      "payload": {
+        "name": "Leo",
+        "beat_id": null,
+        "speaker": "agent",
+        "turn_id": 13,
+        "text_said": "Your reservation is confirmed for five people on Friday, December fourth at seven thirty. Thanks, Daniel, we'll see you then!",
+        "text_heard": "Your reservation is confirmed for five people on Friday, December fourth at seven thirty. Thanks, Daniel, we'll see you then!",
+        "duration_ms": 7920
+      },
+      "created_at": "2026-11-24T08:45:44.146509+00:00"
+    },
+    {
+      "id": 883,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 51,
+      "type": "audio.play",
+      "payload": {
+        "url": "/api/audio/7009417f18857ad0dc1fd98fe80710c0.mp3",
+        "hash": "7009417f18857ad0dc1fd98fe80710c0",
+        "name": "Leo",
+        "speaker": "agent",
+        "turn_id": 13,
+        "duration_ms": 7920
+      },
+      "created_at": "2026-11-24T08:45:44.151210+00:00"
+    },
+    {
+      "id": 884,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 52,
+      "type": "agent.tool_call",
+      "payload": {
+        "ok": true,
+        "args": {},
+        "name": "end_call",
+        "summary": "Ended the call"
+      },
+      "created_at": "2026-11-24T08:45:52.075675+00:00"
+    },
+    {
+      "id": 885,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 53,
+      "type": "call.status",
+      "payload": {
+        "reason": "agent_hung_up",
+        "status": "ended"
+      },
+      "created_at": "2026-11-24T08:45:52.085371+00:00"
+    },
+    {
+      "id": 886,
+      "call_id": "50f38791-4ec2-4912-9cea-581e346c4846",
+      "seq": 54,
+      "type": "link.revoked",
+      "payload": {
+        "token_id": 17
+      },
+      "created_at": "2026-11-24T08:45:52.092921+00:00"
+    }
+  ]
+}

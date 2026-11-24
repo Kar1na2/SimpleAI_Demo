@@ -23,7 +23,21 @@ make frontend     # terminal 2: Vite on 0.0.0.0:5180 (FRONTEND_PORT); proxies /a
 | Raw call events (dev) | `/dev/events/<call_id>` |
 
 Other targets: `make test` (backend tests, no LLM calls), `make call S=order SPEED=4` (one scripted call
-in-process with an end-state check), `make screenshots` (headless Playwright over both scenarios).
+in-process with an end-state check; add `TTS=1` for real voices), `make screenshots` (link page, headless),
+`make director-screenshots` (director replays of the starred takes, headless).
+
+## Recording (director)
+
+Open `http://<tailscale-ip>:5180/director` in Chrome at 1440x900.
+
+- **Live**: a real call with the live agent and OpenAI voices. Press Start; the 3-2-1 countdown gives you
+  time to start recording (the click also unlocks audio). Confirm is a real click inside the link page.
+- **Replay**: re-runs a recorded passing call as a new call with a fresh real link token, playing the
+  recorded turns and voices with silent gaps capped at 700 ms. It pauses where the customer tapped
+  Confirm until you click Confirm in the link page. Pick a take; ★ copies it into `backend/takes/`.
+
+Takes come from live runs with voices: `make call S=order TTS=1` (writes `backend/runs/*.json`). Audio is
+cached in `backend/audio_cache/` (gitignored) and regenerated from a take's manifest if missing.
 
 ## Remote access (Mac -> Tailscale -> this PC)
 

@@ -8,7 +8,7 @@ from sqlalchemy import text
 from app.config import get_settings
 from app.db import engine, init_db
 from app.call.orchestrator import ACTIVE
-from app.routers import calls, dev, public
+from app.routers import calls, dev, media, public, replay
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -40,5 +40,7 @@ async def health():
 
 app.include_router(public.router)
 app.include_router(calls.router)
+app.include_router(media.router)
 if get_settings().enable_dev_routes:
     app.include_router(dev.router)
+    app.include_router(replay.router)

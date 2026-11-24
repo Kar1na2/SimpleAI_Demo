@@ -15,7 +15,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.db import SessionLocal
 from app.events import CallNotFound, EventType, emit
 from app.links import live_url
-from app.models import CallDirection, CallSession, CallStatus
+from app.call.orchestrator import ACTIVE
+from app.call.scenario import ScenarioError, load_scenario
+from app.models import CallDirection, CallSession, CallStatus, Customer
 from app.streaming import CLOSE_NOT_FOUND, stream_events
 
 router = APIRouter(tags=["dev"])
@@ -65,6 +67,36 @@ async def emit_event(call_id: uuid.UUID, body: EmitIn) -> dict[str, Any]:
         return await emit(call_id, body.type, body.payload)
     except CallNotFound:
         raise HTTPException(status_code=404, detail="call not found") from None
+
+
+@router.get("/api/dev/calls/{call_id}")
+async def call_info(call_id: uuid.UUID) -> dict[str, Any]:
+    """What the director's call card shows. Live or replay comes from the in-process registry."""
+    async with SessionLocal() as session:
+        call = await session.get(CallSession, call_id)
+        if call is None:
+            raise HTTPException(status_code=404, detail="call not found")
+        customer = await session.get(Customer, call.customer_id) if call.customer_id else None
+    try:
+        scenario = load_scenario(call.scenario)
+        brand, agent_name = scenario.brand, scenario.agent_name
+    except ScenarioError:
+        brand = agent_name = None
+    run = ACTIVE.get(str(call_id))
+    digits = "".join(ch for ch in (call.customer_phone or "") if ch.isdigit())
+    return {
+        "call_id": str(call.id),
+        "scenario": call.scenario,
+        "direction": call.direction.value,
+        "status": call.status.value,
+        "brand": brand,
+        "agent_name": agent_name,
+        "customer_name": customer.name if customer else None,
+        "customer_phone_last4": digits[-4:] or None,
+        "kind": getattr(run, "kind", "live") if run else None,
+        "replay_of": getattr(run, "run_name", None),
+        "link_url": live_url(call_id),
+    }
 
 
 @router.get("/api/dev/calls/{call_id}/link")

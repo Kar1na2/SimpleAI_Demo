@@ -28,3 +28,6 @@ frontend/public/screenshots/
 .idea/
 .DS_Store
 *.log
+
+# TTS clips (regenerated from run manifests on demand)
+backend/audio_cache/

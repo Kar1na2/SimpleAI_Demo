@@ -1,40 +1,32 @@
 """Run one scenario end to end in this process, print the live transcript, check the end state.
 
     uv run python -m app.call.run order [--speed 4]
+    uv run python -m app.call.run order --tts             # real OpenAI voices, real clip lengths
     uv run python -m app.call.run reservation --manual    # waits up to 180s for a real Confirm click
 
-Auto mode needs only Postgres and ANTHROPIC_API_KEY. Manual mode also needs `make backend`
-running, so the Confirm click has an endpoint to hit. This process polls the DB for the click.
+Auto mode needs only Postgres and ANTHROPIC_API_KEY (--tts also needs OPENAI_API_KEY). Manual
+mode also needs `make backend` running, so the Confirm click has an endpoint to hit. This process
+polls the DB for the click.
 
-Writes every event to backend/runs/<scenario>-<timestamp>.json. Exit code 0 on PASS, 1 on FAIL.
+The call itself writes backend/runs/<scenario>-<timestamp>.json (app/call/checks.py).
+Exit code 0 on PASS, 1 on FAIL.
 """
 
 from __future__ import annotations
 
 import argparse
 import asyncio
-import datetime as dt
 import json
 import logging
 import os
 import sys
-import time
-from pathlib import Path
 from typing import Any
 
-import httpx
-from sqlalchemy import select
-
+from app.call.checks import RUNS_DIR
 from app.call.orchestrator import CallRun, start_call
-from app.call.state import customer_reservation, money
-from app.db import SessionLocal, engine, init_db
+from app.call.state import money
+from app.db import engine, init_db
 from app.events import Event, EventType, history
-from app.models import LinkToken, Order, OrderStatus
-
-RUNS_DIR = Path(__file__).resolve().parents[2] / "runs"
-
-RIBEYE, BUTTER = "FP-RIBEYE-DA16", "FP-BUTTER-GH"
-YES_BEAT = "c2"  # the beat where the customer agrees to the link, in both scenarios
 
 _COLOR = sys.stdout.isatty() and "NO_COLOR" not in os.environ
 
@@ -89,8 +81,8 @@ def format_event(e: Event, raw_token: str | None) -> str | None:
         return f"{PAD}{c(MAGENTA, '[confirm] requested: ' + p.get('summary', ''))}"
     if t == EventType.confirm_received:
         return f"{PAD}{c(MAGENTA, '[confirm] received: the customer tapped Confirm')}"
-    if t == EventType.note_added:
-        return None  # already shown by its add_note tool call
+    if t in (EventType.note_added, EventType.audio_play):
+        return None  # shown by its add_note tool call / its transcript.turn
     return c(DIM, f"{PAD}{t} {json.dumps(p)}")
 
 
@@ -117,99 +109,28 @@ async def print_live(run: CallRun) -> list[Event]:
         await asyncio.sleep(0.1)
 
 
-async def end_state_check(run: CallRun, events: list[Event]) -> list[tuple[str, bool, str]]:
-    checks: list[tuple[str, bool, str]] = []
-
-    def check(label: str, ok: bool, detail: str = "") -> None:
-        checks.append((label, ok, detail))
-
-    def first_seq(etype: str, **match: Any) -> int | None:
-        return next(
-            (e["seq"] for e in events if e["type"] == etype and all(e["payload"].get(k) == v for k, v in match.items())),
-            None,
-        )
-
-    check("call finished without error", run.error is None, run.error or "")
-    confirmed = first_seq(EventType.confirm_received)
-    spoke_after = any(
-        e["type"] == EventType.transcript_turn and e["payload"].get("speaker") == "agent" and e["seq"] > (confirmed or 0)
-        for e in events
-    )
-    check("agent spoke its wrap-up after the Confirm click (no silent hang-up)", bool(confirmed and spoke_after))
-
-    async with SessionLocal() as session:
-        if run.scenario.name == "order":
-            order = await session.scalar(select(Order).where(Order.call_id == run.call_id))
-            check("order placed", bool(order and order.status == OrderStatus.placed),
-                  f"status={order.status.value if order else None}")
-            cart = next((e["payload"] for e in reversed(events) if e["type"] == EventType.state_cart), {"items": []})
-            got = {i["sku"]: i["qty"] for i in cart["items"]}
-            check("cart is exactly 2 × ribeye + 1 × compound butter", got == {RIBEYE: 2, BUTTER: 1}, json.dumps(got))
-            c3_turn = next(
-                (e["payload"]["turn_id"] for e in events
-                 if e["type"] == EventType.transcript_turn and e["payload"].get("beat_id") == "c3"),
-                None,
-            )
-            check("transcript.correction exists for c3",
-                  c3_turn is not None and first_seq(EventType.transcript_correction, turn_id=c3_turn) is not None,
-                  f"c3 turn_id={c3_turn}")
-        else:
-            r = await customer_reservation(session, run.scenario.customer_id)
-            got = (r.status.value, r.party_size, r.date.isoformat(), r.time.strftime("%H:%M")) if r else None
-            check("reservation confirmed, party 5, 2026-12-04 19:30",
-                  got == ("confirmed", 5, "2026-12-04", "19:30"), str(got))
-            requests = sum(1 for e in events if e["type"] == EventType.confirm_requested)
-            check("exactly one confirm.requested", requests == 1, f"got {requests}")
-
-        token = await session.scalar(select(LinkToken).where(LinkToken.call_id == run.call_id))
-
-    connected = first_seq(EventType.call_status, status="connected")
-    minted = first_seq(EventType.link_minted)
-    check("link minted right after connected", bool(connected and minted and minted == connected + 1),
-          f"connected seq={connected}, minted seq={minted}")
-    yes = first_seq(EventType.transcript_turn, beat_id=YES_BEAT)
-    sent = first_seq(EventType.link_sent)
-    check(f"link sent after the customer said yes ({YES_BEAT})", bool(yes and sent and sent > yes),
-          f"yes seq={yes}, sent seq={sent}")
-    check("token revoked (DB + link.revoked event)",
-          bool(token and token.revoked_at and first_seq(EventType.link_revoked)), "")
-    if run.raw_token:
-        from app.main import app
-
-        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://link.local") as http:
-            status = (await http.get(f"/api/s/{run.raw_token}")).status_code
-        check("GET /api/s/{token} returns 410 after the call", status == 410, f"got {status}")
-    else:
-        check("GET /api/s/{token} returns 410 after the call", False, "no token was minted")
-    return checks
-
-
-async def main(scenario: str, manual: bool, speed: float) -> int:
+async def main(scenario: str, manual: bool, speed: float, tts: bool) -> int:
     logging.basicConfig(level=logging.WARNING, format=f"{PAD}%(levelname)s %(name)s: %(message)s")
     logging.getLogger("app.call.agent").setLevel(logging.INFO)  # unspoken between-tool notes
     await init_db()
 
-    started_at = dt.datetime.now(dt.UTC)
-    t0 = time.monotonic()
-    run = await start_call(scenario, "manual" if manual else "auto", speed)
-    print(c(BOLD, f"{scenario} · call {run.call_id} · {run.mode} · speed {speed}"), flush=True)
-    events = await print_live(run)
-    await run.task  # already done; re-raises nothing (run() catches)
-    duration = time.monotonic() - t0
-
-    checks = await end_state_check(run, events)
-    passed = all(ok for _, ok, _ in checks)
+    run = await start_call(scenario, "manual" if manual else "auto", speed, tts=tts)
+    voice = " · TTS" if tts else ""
+    print(c(BOLD, f"{scenario} · call {run.call_id} · {run.mode} · speed {speed}{voice}"), flush=True)
+    await print_live(run)
+    await run.task  # already done; run() catches everything and records the run file
 
     print(c(BOLD, "\nEND-STATE CHECK"))
-    for label, ok, detail in checks:
+    for label, ok, detail in run.checks:
         mark = c(GREEN, "PASS") if ok else c(RED, "FAIL")
         print(f"  {mark}  {label}" + (c(DIM, f"  ({detail})") if detail and not ok else ""))
 
     agent = run.agent
     usage = agent.usage.as_dict(agent.model) if agent else None
     print()
-    print(c(BOLD, "RESULT: ") + (c(GREEN + ";" + BOLD, "PASS") if passed else c(RED + ";" + BOLD, "FAIL")))
-    print(f"duration: {duration:.1f}s · silence nudges: {len(run.nudges)}" + (f" (before {', '.join(run.nudges)})" if run.nudges else ""))
+    print(c(BOLD, "RESULT: ") + (c(GREEN + ";" + BOLD, "PASS") if run.passed else c(RED + ";" + BOLD, "FAIL")))
+    nudges = f" (before {', '.join(run.nudges)})" if run.nudges else ""
+    print(f"duration: {run.duration or 0:.1f}s · silence nudges: {len(run.nudges)}{nudges}")
     if usage:
         cost = f"≈ ${usage['cost_usd']:.4f}" if usage["cost_usd"] is not None else "cost n/a for this model"
         print(
@@ -219,33 +140,12 @@ async def main(scenario: str, manual: bool, speed: float) -> int:
         )
         if agent.unspoken:
             print(c(DIM, f"{len(agent.unspoken)} between-tool note(s) came back as thinking blocks (not spoken)"))
-
-    RUNS_DIR.mkdir(exist_ok=True)
-    path = RUNS_DIR / f"{scenario}-{started_at:%Y%m%d-%H%M%S}.json"
-    path.write_text(
-        json.dumps(
-            {
-                "scenario": scenario,
-                "call_id": str(run.call_id),
-                "mode": run.mode,
-                "speed": speed,
-                "started_at": started_at.isoformat(),
-                "duration_s": round(duration, 2),
-                "passed": passed,
-                "error": run.error,
-                "nudges": run.nudges,
-                "checks": [{"label": l, "ok": ok, "detail": d} for l, ok, d in checks],
-                "usage": usage,
-                "unspoken_notes": agent.unspoken if agent else [],
-                "events": events,
-            },
-            indent=2,
-            ensure_ascii=False,
-        )
-    )
-    print(f"events: {path.relative_to(RUNS_DIR.parent)}")
+    if run.audio:
+        total = sum(a["duration_ms"] for a in run.audio.values()) / 1000
+        print(f"TTS: {len(run.audio)} clips, {total:.1f}s of audio")
+    print(f"run file: {RUNS_DIR.name}/{run.run_file}" if run.run_file else c(RED, "run file: not written"))
     await engine.dispose()
-    return 0 if passed else 1
+    return 0 if run.passed else 1
 
 
 def cli() -> None:
@@ -253,10 +153,11 @@ def cli() -> None:
     parser.add_argument("scenario", choices=["order", "reservation"])
     parser.add_argument("--manual", action="store_true", help="wait for a real Confirm click (up to 180s)")
     parser.add_argument("--speed", type=float, default=1.0, help="pacing multiplier (4 = four times faster)")
+    parser.add_argument("--tts", action="store_true", help="OpenAI TTS for every turn; pacing = real clip length")
     a = parser.parse_args()
     if a.speed <= 0:
         parser.error("--speed must be > 0")
-    sys.exit(asyncio.run(main(a.scenario, a.manual, a.speed)))
+    sys.exit(asyncio.run(main(a.scenario, a.manual, a.speed, a.tts)))
 
 
 if __name__ == "__main__":

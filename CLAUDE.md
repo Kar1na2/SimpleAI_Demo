@@ -115,6 +115,9 @@ screen. Do not build anything the recording won't show.
                                                                `frontend: npm run dev` (port **5180** via `FRONTEND_PORT`, host 0.0.0.0, strictPort; proxies `/api` and `/ws`
                                                                to 127.0.0.1:8000). Make targets: `make backend`, `make frontend`, `make live`, `make remote-info`.
                                                              - Screenshots go to `frontend/public/screenshots/` (gitignored), browsable at `/dev/screenshots`.
+                                                             - TTS clips are cached in `backend/audio_cache/` (gitignored), served at `/api/audio/{hash}.mp3`.
+                                                               Every live call writes `backend/runs/<scenario>-<ts>.json` (events + checks + audio manifest).
+                                                               Starred takes live in `backend/takes/` (committed). Replay: `POST /api/replay {run, max_gap_ms}`.
 
 ## Remote access (Tailscale)
 - The user opens the frontend from a Mac at `http://<tailscale-ip>:5180` (this PC: <tailscale-ip>,

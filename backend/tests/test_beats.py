@@ -84,20 +84,45 @@ def test_unknown_event_type_is_rejected():
 def test_order_scenario_matches_the_brief():
     s = load_scenario("order")
     assert (s.brand, s.agent_name, s.direction, s.customer_id) == ("Fieldstone Provisions", "Ava", "outbound", 1)
-    assert [b.id for b in s.beats] == ["c1", "c2", "c3", "c4", "c5", "c6", "c7"]
-    c3, c4, c6, c7 = s.beat("c3"), s.beat("c4"), s.beat("c6"), s.beat("c7")
-    assert c3.say == "Got it, it's open. So, I'd like two of the ribeyes."
-    assert c3.heard == "Got it, it's open. So, I'd like ten of the ribeyes."
-    assert c4.corrects == "c3" and c4.wait_for.state.raw == "cart.FP-RIBEYE-DA16.qty != 2"
-    assert c6.action == "confirm" and c6.wait_for.event == "confirm.requested"
-    assert c7.optional and c7.say == "Great, thanks Ava. Bye!"
-    assert "Hi Jamie, this is Ava from Fieldstone Provisions." in s.system_prompt
+    assert [b.id for b in s.beats] == ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"]
+    c2, c3, c4, c5, c7, c8 = (s.beat(b) for b in ("c2", "c3", "c4", "c5", "c7", "c8"))
+    assert c2.wait_for.agent_said_matches.pattern == r"\?" and c2.wait_for.agent_not_yet_said.pattern == "link"
+    assert c3.marks == "link_accepted"
+    assert c4.say == "Got it, it's open. So, I'd like two of the ribeyes."
+    assert c4.heard == "Got it, it's open. So, I'd like ten of the ribeyes."
+    assert c5.corrects == "c4" and [p.raw for p in c5.wait_for.state] == ["cart.FP-RIBEYE-DA16.qty != 2"]
+    assert c7.action == "confirm" and c7.wait_for.event == "confirm.requested"
+    assert c8.optional and c8.say == "Great, thanks Ava. Bye!"
+    assert "Before we continue, I can text you a link" in s.system_prompt
 
 
 def test_reservation_scenario_matches_the_brief():
     s = load_scenario("reservation")
     assert (s.brand, s.agent_name, s.direction, s.customer_id) == ("Juniper Table", "Leo", "inbound", 2)
-    assert [b.id for b in s.beats] == ["c1", "c2", "c3", "c4", "c5", "c6"]
-    assert s.beat("c3").wait_for.state.raw == "reservation.party_size == 5"
+    assert [b.id for b in s.beats] == ["c1", "c2", "c3", "c4", "c5", "c6", "c7"]
+    assert [p.raw for p in s.beat("c3").wait_for.state] == ["reservation.party_size == 5"]
     assert s.beat("c4").wait_for.agent_said_matches.pattern == "7:30|seven[- ]thirty|19:30"
-    assert s.beat("c5").action == "confirm" and s.beat("c6").optional
+    c5 = s.beat("c5")
+    assert c5.say == "No, that's everything." and c5.wait_for.agent_said_matches.pattern == "anything else"
+    assert [p.raw for p in c5.wait_for.state] == ["reservation.date == 2026-12-04", "reservation.time == 19:30"]
+    assert s.beat("c6").action == "confirm" and s.beat("c7").optional
+
+
+def test_agent_not_yet_said_looks_at_the_whole_call():
+    w = WaitFor.parse({"agent_said_matches": r"\?", "agent_not_yet_said": "link"}, "c2")
+    view = CallView()
+    view.apply(ev(1, "transcript.turn", speaker="agent", text_said="Hi Jamie, this is Ava."))
+    view.apply(ev(2, "transcript.turn", speaker="customer", text_said="Oh, hi!"))
+    view.apply(ev(3, "transcript.turn", speaker="agent", text_said="What are you shopping for?"))
+    assert w.unmet(view.beat) == []
+    view.apply(ev(4, "transcript.turn", speaker="agent", text_said="I can text you a link."))
+    assert w.unmet(view.beat) == ["agent_not_yet_said /link/ (the agent already said it)"]
+    view.apply(ev(5, "transcript.turn", speaker="customer", text_said="ok"))
+    view.apply(ev(6, "transcript.turn", speaker="agent", text_said="Anything else?"))
+    assert w.unmet(view.beat), "a link mention earlier in the call still counts"
+
+
+def test_state_list_needs_every_predicate():
+    w = WaitFor.parse({"state": ["reservation.date == 2026-12-04", "reservation.time == 19:30"]}, "c5")
+    assert w.unmet(BeatView(reservation={"date": "2026-12-04", "time": "19:30"})) == []
+    assert w.unmet(BeatView(reservation={"date": "2026-12-04", "time": "19:00"})) == ["state reservation.time == 19:30"]
