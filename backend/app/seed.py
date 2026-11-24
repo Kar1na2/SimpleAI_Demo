@@ -17,7 +17,6 @@ from app.models import (
     Lead,
     Product,
     Reservation,
-    ReservationStatus,
     RestaurantSlot,
     SlotStatus,
 )
@@ -131,7 +130,7 @@ async def seed() -> dict[str, int]:
 
         slots = _slot_rows()
         session.add_all(slots)
-        session.add(Reservation(customer=daniel, status=ReservationStatus.booked, **DANIEL_RESERVATION))
+        session.add(Reservation.booked(daniel.id, **DANIEL_RESERVATION))
 
     return {"products": len(PRODUCTS), "customers": 2, "leads": 1, "slots": len(slots), "reservations": 1}
 

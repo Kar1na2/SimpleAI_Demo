@@ -66,3 +66,46 @@ async def test_reservation_snapshot_and_masking(reservation_call, http):
     assert {"date": "2026-12-04", "time": "19:00", "status": "full"} in body["slots"]
     assert mask_phone("+15555550187") == "+1 •••-•••-0187"
     assert json.dumps(body).count(raw) == 0
+
+
+async def test_cart_snapshot_has_shipping_and_totals(order_call, http):
+    from app.call.tools import run_tool
+
+    raw = await mint(order_call.call_id)
+    await run_tool(order_call, "add_to_cart", {"sku": "FP-RIBEYE-DA16", "qty": 2})
+    cart = (await http.get(f"/api/s/{raw}")).json()["cart"]
+    assert (cart["subtotal_cents"], cart["shipping_cents"], cart["total_cents"]) == (14400, 1500, 15900)
+    assert cart["amount_to_free_shipping_cents"] == 600 and not cart["free_shipping"]
+    await run_tool(order_call, "add_to_cart", {"sku": "FP-BUTTER-GH", "qty": 1})
+    cart = (await http.get(f"/api/s/{raw}")).json()["cart"]
+    assert (cart["subtotal_cents"], cart["shipping_cents"], cart["total_cents"]) == (15600, 0, 15600)
+    assert cart["free_shipping"] and cart["amount_to_free_shipping_cents"] == 0
+
+
+async def test_reservation_snapshot_shows_booked_vs_pending(reservation_call):
+    from app.call.tools import run_tool
+
+    await run_tool(reservation_call, "update_reservation", {"party_size": 5, "date": "2026-12-04", "time": "19:30"})
+    snap = next(e for e in reversed(await history(reservation_call.call_id)) if e["type"] == EventType.state_reservation)
+    r = snap["payload"]
+    assert r["pending"] and r["booked"]["date"] == "2026-12-05"
+    assert {c["field"]: (c["from"], c["to"]) for c in r["changes"]} == {
+        "party_size": (4, 5),
+        "date": ("2026-12-05", "2026-12-04"),
+        "time": ("19:00", "19:30"),
+    }
+    await emit(reservation_call.call_id, EventType.confirm_requested, {"summary": "x"})
+    await emit(reservation_call.call_id, EventType.confirm_received, {"via": "test"})
+    await run_tool(reservation_call, "confirm_reservation", {})
+    r = next(e for e in reversed(await history(reservation_call.call_id)) if e["type"] == EventType.state_reservation)["payload"]
+    assert not r["pending"] and r["changes"] == [] and r["booked"]["time"] == "19:30"
+
+
+async def test_expired_link_410_names_the_brand_only(order_call, http):
+    raw = await mint(order_call.call_id)
+    await revoke(order_call.call_id)
+    r = await http.get(f"/api/s/{raw}")
+    assert r.status_code == 410
+    detail = r.json()["detail"]
+    assert detail["brand"] == "Fieldstone Provisions" and set(detail) == {"message", "brand", "theme"}
+    assert "Jamie" not in r.text and "cart" not in r.text

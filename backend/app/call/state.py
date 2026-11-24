@@ -14,10 +14,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models import Cart, CartItem, Customer, Order, Reservation, RestaurantSlot
+from app.models import Cart, CartItem, Customer, Order, Reservation, ReservationStatus, RestaurantSlot
 
-# Fieldstone Provisions store rule (the order system prompt says the same).
+# Fieldstone Provisions store rules. The order system prompt states the free-shipping line.
+# CLAUDE.md doesn't give the fee below it; a flat $15 is this demo's choice.
 FREE_SHIPPING_CENTS = 15000
+FLAT_SHIPPING_CENTS = 1500
 
 
 def money(cents: int) -> str:
@@ -62,6 +64,8 @@ async def cart_snapshot(session: AsyncSession, call_id: uuid.UUID) -> dict[str, 
             }
         )
     subtotal = sum(i["line_total_cents"] for i in items)
+    free = subtotal >= FREE_SHIPPING_CENTS
+    shipping = 0 if free or not items else FLAT_SHIPPING_CENTS
     order = await session.scalar(
         select(Order).where(Order.call_id == call_id).order_by(Order.id.desc()).limit(1)
     )
@@ -69,8 +73,11 @@ async def cart_snapshot(session: AsyncSession, call_id: uuid.UUID) -> dict[str, 
         "items": items,
         "item_count": sum(i["qty"] for i in items),
         "subtotal_cents": subtotal,
+        "shipping_cents": shipping,
+        "total_cents": subtotal + shipping,
         "free_shipping_threshold_cents": FREE_SHIPPING_CENTS,
-        "free_shipping": subtotal >= FREE_SHIPPING_CENTS,
+        "free_shipping": free,
+        "amount_to_free_shipping_cents": max(0, FREE_SHIPPING_CENTS - subtotal),
         "order": (
             {"id": order.id, "status": order.status.value, "total_cents": order.total_cents}
             if order
@@ -90,14 +97,27 @@ async def customer_reservation(session: AsyncSession, customer_id: int) -> Reser
 
 
 def reservation_snapshot(r: Reservation) -> dict[str, Any]:
+    """Current values, what's on the books, and the field-by-field difference between them."""
+    booked = {
+        "party_size": r.booked_party_size,
+        "date": r.booked_date.isoformat(),
+        "weekday": f"{r.booked_date:%A}",
+        "time": hhmm(r.booked_time),
+    }
+    current = {"party_size": r.party_size, "date": r.date.isoformat(), "weekday": f"{r.date:%A}", "time": hhmm(r.time)}
+    changes = [
+        {"field": f, "from": booked[f], "to": current[f]}
+        for f in ("party_size", "date", "time")
+        if booked[f] != current[f]
+    ]
     return {
         "id": r.id,
         "customer_name": r.customer.name,
-        "party_size": r.party_size,
-        "date": r.date.isoformat(),
-        "weekday": f"{r.date:%A}",
-        "time": hhmm(r.time),
+        **current,
         "status": r.status.value,
+        "pending": r.status == ReservationStatus.pending_change,
+        "booked": booked,
+        "changes": changes,
     }
 
 

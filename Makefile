@@ -1,4 +1,4 @@
-.PHONY: install db-up db-down db-reset seed backend frontend test call
+.PHONY: install db-up db-down db-reset seed backend frontend test call screenshots
 
 install:            ## Install backend (uv) and frontend (npm) dependencies
 	cd backend && uv sync
@@ -27,3 +27,6 @@ test:               ## Backend tests (separate simpleai_test DB; no LLM calls)
 
 call:               ## Scripted call with the live agent: make call S=order SPEED=4 [MANUAL=1]
 	cd backend && uv run python -m app.call.run $(or $(S),order) --speed $(or $(SPEED),1) $(if $(MANUAL),--manual)
+
+screenshots:        ## Link page screenshots for both scenarios (needs `make backend` + `make frontend`)
+	cd frontend && npm run screenshots

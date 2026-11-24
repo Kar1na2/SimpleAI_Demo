@@ -21,6 +21,7 @@ Model settings, chosen for Claude Sonnet 5.5 (ANTHROPIC_MODEL):
 
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import asdict, dataclass
@@ -38,6 +39,10 @@ EFFORT = "low"
 MAX_TOKENS = 1024  # thinking counts toward this; see module docstring
 MAX_STEPS_PER_TURN = 10  # model requests inside one agent turn (tool loop iterations)
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
+GOODBYE_NOTE = (
+    "You haven't said anything out loud since the caller's last message. Say your one-sentence "
+    "wrap-up and goodbye now, as your reply, with no tool calls. The call ends right after."
+)
 
 # USD per million tokens: input, output, 5-minute cache write, cache read.
 PRICES = {"claude-sonnet-5-5": (2.00, 10.00, 2.50, 0.10)}
@@ -96,7 +101,10 @@ class Agent:
     async def respond(self, user_texts: list[str]) -> None:
         """One agent turn: deliver the user content, then speak and call tools until the model stops."""
         self.messages.append({"role": "user", "content": [{"type": "text", "text": t} for t in user_texts]})
+        spoke = False  # did anything get said out loud since this input?
+        goodbye_requested = False  # at most once per turn: see the end_call branch below
         for _ in range(MAX_STEPS_PER_TURN):
+            ask_goodbye = False
             response = await self._create()
             self.messages.append({"role": "assistant", "content": response.content})
             if response.stop_reason == "refusal":
@@ -109,11 +117,18 @@ class Agent:
             for block in response.content:
                 if block.type == "text" and block.text.strip():
                     await self.on_say(block.text.strip())
+                    spoke = True
                 elif block.type == "thinking" and (block.thinking or "").strip():
                     self.unspoken.append(block.thinking.strip())
                     log.info("call %s: unspoken note: %s", self.ctx.call_id, block.thinking.strip())
                 elif block.type == "tool_use":
                     content, is_error = await run_tool(self.ctx, block.name, block.input)
+                    if block.name == "end_call" and not is_error and not spoke and not goodbye_requested:
+                        # Text written just before a tool call can come back as an (empty) thinking
+                        # block on Sonnet 5.5, so the wrap-up never gets spoken. Give the goodbye
+                        # one more request, where it lands as the final text block.
+                        content = json.dumps({"status": "ending", "note": GOODBYE_NOTE})
+                        goodbye_requested = ask_goodbye = True
                     result: dict[str, Any] = {"type": "tool_result", "tool_use_id": block.id, "content": content}
                     if is_error:
                         result["is_error"] = True
@@ -124,6 +139,9 @@ class Agent:
             # Every tool_use needs its tool_result, even when the call is ending.
             self.messages.append({"role": "user", "content": results})
             if self.ctx.end_requested:
+                if ask_goodbye:
+                    log.info("call %s: end_call with nothing said; asking for the goodbye", self.ctx.call_id)
+                    continue
                 return  # hung up: no more model requests on this call
         raise AgentError(f"agent didn't finish its turn within {MAX_STEPS_PER_TURN} model requests")
 

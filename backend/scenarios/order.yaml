@@ -6,6 +6,8 @@ meta:
   direction: outbound
   customer_id: 1 # Jamie Park
   customer_phone: "+15555550142"
+  # Link page colors: deep forest green on warm off-white.
+  theme: { accent: "#1F4A37", surface: "#F8F5EF" }
 
 beats:
   - id: c1

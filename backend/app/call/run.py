@@ -130,6 +130,12 @@ async def end_state_check(run: CallRun, events: list[Event]) -> list[tuple[str, 
         )
 
     check("call finished without error", run.error is None, run.error or "")
+    confirmed = first_seq(EventType.confirm_received)
+    spoke_after = any(
+        e["type"] == EventType.transcript_turn and e["payload"].get("speaker") == "agent" and e["seq"] > (confirmed or 0)
+        for e in events
+    )
+    check("agent spoke its wrap-up after the Confirm click (no silent hang-up)", bool(confirmed and spoke_after))
 
     async with SessionLocal() as session:
         if run.scenario.name == "order":
@@ -152,6 +158,8 @@ async def end_state_check(run: CallRun, events: list[Event]) -> list[tuple[str, 
             got = (r.status.value, r.party_size, r.date.isoformat(), r.time.strftime("%H:%M")) if r else None
             check("reservation confirmed, party 5, 2026-12-04 19:30",
                   got == ("confirmed", 5, "2026-12-04", "19:30"), str(got))
+            requests = sum(1 for e in events if e["type"] == EventType.confirm_requested)
+            check("exactly one confirm.requested", requests == 1, f"got {requests}")
 
         token = await session.scalar(select(LinkToken).where(LinkToken.call_id == run.call_id))
 

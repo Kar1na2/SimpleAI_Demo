@@ -6,6 +6,8 @@ meta:
   direction: inbound
   customer_id: 2 # Daniel Cho
   customer_phone: "+15555550187"
+  # Link page colors: muted teal on cool off-white.
+  theme: { accent: "#2C6B6E", surface: "#F4F7F8" }
 
 beats:
   - id: c1

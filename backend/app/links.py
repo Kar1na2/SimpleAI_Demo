@@ -38,6 +38,10 @@ class LinkNotFound(LinkError):
 class LinkGone(LinkError):
     status_code = 410
 
+    def __init__(self, message: str, token: "LinkToken"):
+        super().__init__(message)
+        self.token = token
+
 
 def hash_token(raw: str) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
@@ -88,7 +92,7 @@ async def resolve(raw: str) -> LinkToken:
     if token is None:
         raise LinkNotFound("unknown link")
     if token.revoked_at is not None or token.expires_at <= _now():
-        raise LinkGone("This link has expired")
+        raise LinkGone("This link has expired", token)
     return token
 
 

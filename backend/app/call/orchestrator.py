@@ -50,6 +50,7 @@ WORDS_PER_SECOND = 2.7
 CONFIRM_DELAY_SECONDS = 1.5
 MANUAL_CONFIRM_TIMEOUT_SECONDS = 180
 MAX_NUDGES = 2
+SILENCE_SECONDS = 2.0  # how long the customer stays quiet before the agent is nudged
 CALL_TIMEOUT_SECONDS = 600
 
 SILENCE_NOTE = "[The customer is silent, waiting for you to continue.]"
@@ -182,6 +183,7 @@ class CallRun:
                 )
             nudges += 1
             self.nudges.append(beat.id)
+            await self._pause(SILENCE_SECONDS)  # a real pause, so the nudge doesn't sound like an interruption
             log.info("call %s: nudge %d before beat %s (%s)", self.call_id, nudges, beat.id, "; ".join(unmet))
             await self._agent_turn([SILENCE_NOTE])
 
@@ -200,6 +202,10 @@ class CallRun:
     async def _speak(self, text: str) -> None:
         await self._pause(speech_seconds(text))
 
+    def _duration_ms(self, text: str) -> int:
+        """Spoken length of a turn at this call's speed. Sent on transcript.turn (typing indicator)."""
+        return round(speech_seconds(text) / self.speed * 1000)
+
     def _next_turn_id(self) -> int:
         self.turn_count += 1
         return self.turn_count
@@ -215,6 +221,7 @@ class CallRun:
                 "text_said": text,
                 "text_heard": text,
                 "beat_id": None,
+                "duration_ms": self._duration_ms(text),
             },
         )
         await self._speak(text)
@@ -232,6 +239,7 @@ class CallRun:
                 "text_said": beat.say,
                 "text_heard": beat.heard,
                 "beat_id": beat.id,
+                "duration_ms": self._duration_ms(beat.say),
             },
         )
         if beat.corrects:

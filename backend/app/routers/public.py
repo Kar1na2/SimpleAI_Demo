@@ -31,9 +31,23 @@ router = APIRouter(tags=["link"])
 _confirm_locks: defaultdict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
 
+def _brand(scenario_name: str) -> tuple[str | None, str | None, dict[str, str]]:
+    try:
+        s = load_scenario(scenario_name)
+        return s.brand, s.agent_name, s.theme
+    except ScenarioError:  # dev calls have no scenario file
+        return None, None, {}
+
+
 async def _token_or_http(raw: str) -> LinkToken:
     try:
         return await links.resolve(raw)
+    except links.LinkGone as e:
+        # Brand and colors only, so the expired page can say who it was. No customer data.
+        async with SessionLocal() as session:
+            call = await session.get(CallSession, e.token.call_id)
+        brand, _, theme = _brand(call.scenario) if call else (None, None, {})
+        raise HTTPException(status_code=410, detail={"message": str(e), "brand": brand, "theme": theme}) from None
     except links.LinkError as e:
         raise HTTPException(status_code=e.status_code, detail=str(e)) from None
 
@@ -42,18 +56,20 @@ async def call_snapshot(call_id: uuid.UUID, token: LinkToken) -> dict[str, Any]:
     async with SessionLocal() as session:
         call = await session.get(CallSession, call_id)
         assert call is not None
-        try:
-            scenario = load_scenario(call.scenario)
-            brand, agent_name = scenario.brand, scenario.agent_name
-        except ScenarioError:  # dev calls have no scenario file
-            brand = agent_name = None
+        brand, agent_name, theme = _brand(call.scenario)
         snap: dict[str, Any] = {
+            # The event seq this snapshot reflects. The page streams the full history from
+            # seq 0 for the transcript, and animates only events after this one.
+            "seq": call.last_event_seq,
             "call_id": str(call.id),
             "brand": brand,
             "agent_name": agent_name,
+            "theme": theme,
             "scenario": call.scenario,
             "direction": call.direction.value,
             "status": call.status.value,
+            "connected_at": call.connected_at.isoformat() if call.connected_at else None,
+            "link_created_at": token.created_at.isoformat(),
             "expires_at": token.expires_at.isoformat(),
             "cart": None,
             "reservation": None,

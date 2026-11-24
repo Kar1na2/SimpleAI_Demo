@@ -221,7 +221,8 @@ def _model_cart(snap: dict[str, Any]) -> dict[str, Any]:
             for i in snap["items"]
         ],
         "subtotal": state.money(snap["subtotal_cents"]),
-        "free_shipping": snap["free_shipping"],
+        "shipping": "free" if snap["free_shipping"] else state.money(snap["shipping_cents"]),
+        "total": state.money(snap["total_cents"]),
         "order_status": snap["order"]["status"] if snap["order"] else "not placed",
     }
 
@@ -341,7 +342,7 @@ async def place_order(ctx: ToolContext, args: dict[str, Any]):
         cart = await state.call_cart(session, ctx.call_id)
         if cart is None or not cart.items:
             raise ToolError("The cart is empty.")
-        total = sum(i.quantity * i.product.price_cents for i in cart.items)
+        total = (await state.cart_snapshot(session, ctx.call_id))["total_cents"]
         order = Order(
             customer_id=ctx.customer_id,
             cart_id=cart.id,
@@ -486,7 +487,14 @@ async def confirm_reservation(ctx: ToolContext, args: dict[str, Any]):
     async with SessionLocal() as session, session.begin():
         r = await _caller_reservation(session, ctx)
         await session.execute(
-            update(Reservation).where(Reservation.id == r.id).values(status=ReservationStatus.confirmed)
+            update(Reservation)
+            .where(Reservation.id == r.id)
+            .values(
+                status=ReservationStatus.confirmed,
+                booked_party_size=r.party_size,
+                booked_date=r.date,
+                booked_time=r.time,
+            )
         )
     snap = await _emit_reservation(ctx)
     return {"status": "confirmed", "reservation": snap}, f"Confirmed reservation: {_describe(snap)}"

@@ -172,12 +172,32 @@ class Reservation(Base):
     status: Mapped[ReservationStatus] = mapped_column(
         str_enum(ReservationStatus), default=ReservationStatus.booked
     )
+    # What's on the books: the last booked/confirmed values. update_reservation changes the
+    # fields above (status pending_change), confirm_reservation copies them here. The link page
+    # shows booked -> pending from these, not from guesses.
+    booked_party_size: Mapped[int] = mapped_column(Integer)
+    booked_date: Mapped[dt.date] = mapped_column(Date)
+    booked_time: Mapped[dt.time] = mapped_column(Time)
     created_at: Mapped[dt.datetime] = created_at_col()
     updated_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     customer: Mapped[Customer] = relationship()
+
+    @classmethod
+    def booked(cls, customer_id: int, party_size: int, date: dt.date, time: dt.time) -> "Reservation":
+        """A new reservation that is on the books as-is (nothing pending)."""
+        return cls(
+            customer_id=customer_id,
+            party_size=party_size,
+            date=date,
+            time=time,
+            status=ReservationStatus.booked,
+            booked_party_size=party_size,
+            booked_date=date,
+            booked_time=time,
+        )
 
 
 # --- Calls, link tokens, event log ------------------------------------------------------

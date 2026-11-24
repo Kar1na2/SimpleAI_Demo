@@ -177,6 +177,7 @@ class Scenario:
     customer_phone: str
     system_prompt: str
     beats: tuple[Beat, ...]
+    theme: dict[str, str] = field(default_factory=dict)  # link page colors: accent, surface
 
     def beat(self, beat_id: str) -> Beat:
         return next(b for b in self.beats if b.id == beat_id)
@@ -233,6 +234,7 @@ def parse_scenario(name: str, data: dict[str, Any], system_prompt: str) -> Scena
         customer_phone=str(meta["customer_phone"]),
         system_prompt=system_prompt.strip(),
         beats=tuple(beats),
+        theme={str(k): str(v) for k, v in (meta.get("theme") or {}).items()},
     )
 
 
