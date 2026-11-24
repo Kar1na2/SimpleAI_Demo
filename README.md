@@ -1,64 +1,105 @@
 # Live Call Link Demo
 
-During a (simulated) phone call, an AI agent texts the customer a temporary, secured link that
-shows live what the agent heard, what it's noting and doing, and the resulting cart or
-reservation. The customer confirms there before anything is committed. CLAUDE.md is the full
-brief. Telephony is simulated; the agent, tools, database and link are live.
+> **Unofficial demo.** Not affiliated with or endorsed by Simple AI. All brands, people, phone numbers
+> and orders in it are fictional.
 
-## Run
+During a phone call, an AI agent texts the customer a temporary, secured link. The page shows, live,
+what the agent heard, what it's noting and doing, and the resulting cart or reservation. The customer
+can catch a mistake while the call is still going and confirm before anything is committed.
 
-```bash
-make install      # first time: uv sync + npm install
-make db-up        # Postgres 16 on localhost:5433
-make seed         # wipe and load demo data (needed after schema changes)
-make backend      # terminal 1: FastAPI on 127.0.0.1:8000 (loopback only)
-make frontend     # terminal 2: Vite on 0.0.0.0:5180 (FRONTEND_PORT); proxies /api and /ws to :8000
+Two scenarios:
+
+- **Order (outbound).** Ava from Fieldstone Provisions calls Jamie about dry-aged ribeyes. Jamie asks
+  for two; the agent hears "ten". Jamie sees 10 in the cart on the link and corrects it, accepts an
+  add-on, and confirms on the page.
+- **Reservation change (inbound).** Daniel calls Juniper Table to add a guest. The calendar on the
+  link shows him the date is a Saturday, so he moves it to Friday, picks an open time, and confirms.
+
+## What's real and what's simulated
+
+**Real**
+- The agent: Claude (Anthropic API) decides what to say and calls tools.
+- The tools read and write Postgres: products, cart, reservation, availability.
+- The link token: 32 random bytes, stored only as a SHA-256 hash. It's created when the call
+  connects, sent only after the customer says yes, and revoked when the call ends.
+- The link page renders from database events over a websocket, never from the script.
+- Confirm is a real click. The agent can't place the order or confirm the reservation until that
+  click arrives; the server enforces it.
+- The voices: OpenAI text-to-speech.
+
+**Simulated**
+- The phone line: there's no telephony provider. The call runs in-process.
+- The customer: scripted lines from a beat file (`backend/scenarios/*.yaml`), voiced with TTS.
+- The SMS: shown as a text bubble in the director view. Nothing is sent.
+- The mishearing: the customer's line says "two", but the agent is given "ten", standing in for a
+  speech-recognition error.
+
+**Replay mode** plays back a recorded live call (agent turns, tool results, voices) with long pauses
+shortened. The link token, the link page and the Confirm click are still real.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Backend["Backend (FastAPI)"]
+        O["Call orchestrator<br/>scripted customer"]
+        A["Agent<br/>Claude + tools"]
+        E["Event log<br/>call_events + pub/sub"]
+    end
+    DB[("Postgres")]
+    TTS["OpenAI TTS"]
+    L["Link page /s/:token<br/>what the customer sees"]
+    D["Director /director<br/>operator view + audio"]
+
+    O -->|"what the agent heard"| A
+    O -->|"lines to speak"| TTS
+    A -->|"tool calls"| DB
+    O -->|events| E
+    A -->|events| E
+    E -->|stored in| DB
+    E -->|websocket| L
+    E -->|websocket| D
+    L -->|"Confirm click"| O
 ```
 
-| What | Where |
+Every change (a spoken turn, a tool call, the new cart or reservation, the link's status) is appended
+to `call_events` and pushed to subscribers. The link page and the director rebuild everything they
+show from that log, and resume from the last event after a reconnect.
+
+## Run it
+
+Needs Docker, Python 3.12 with [uv](https://docs.astral.sh/uv/), Node.js 22, and API keys for
+Anthropic and OpenAI.
+
+```bash
+cp backend/.env.example backend/.env   # then fill in ANTHROPIC_API_KEY and OPENAI_API_KEY
+make install                           # uv sync + npm install
+make db-up                             # Postgres 16 in Docker, localhost:5433
+make seed                              # demo products, customers and reservation
+make backend                           # terminal 1: API on 127.0.0.1:8000
+make frontend                          # terminal 2: web app on port 5180
+```
+
+Open <http://localhost:5180/director>, pick a scenario, choose **Live** (a new call with the live
+agent) or **Replay** (one of the recorded takes in `backend/takes/`), and press Start. When the agent
+asks, click Confirm inside the link page. Replay needs only the OpenAI key: the first run regenerates
+the voice clips.
+
+The director, replays and `/dev` pages use development-only API routes. They're off unless
+`ENABLE_DEV_ROUTES=true`, which the example env file sets for local use. Run the demo locally only.
+
+Other commands:
+
+| Command | What it does |
 |---|---|
-| Customer link page | `/s/<token>` |
-| Live call link | `make live S=order MODE=manual SPEED=1` prints it |
-| Screenshots (dev) | `/dev/screenshots` (files in `frontend/public/screenshots/`, gitignored) |
-| Raw call events (dev) | `/dev/events/<call_id>` |
+| `make test` | Backend tests (separate test database, no LLM calls) |
+| `make call S=order SPEED=4` | One call in the terminal with the live agent, then an end-state check (`TTS=1` adds voices) |
+| `make director-screenshots` | Replays both takes in a headless browser, checks the timeline frame by frame, saves screenshots |
 
-Other targets: `make test` (backend tests, no LLM calls), `make call S=order SPEED=4` (one scripted call
-in-process with an end-state check; add `TTS=1` for real voices), `make screenshots` (link page, headless),
-`make director-screenshots` (director replays of the starred takes, headless).
+`scripts/windows/` and `make remote-info` are optional helpers for viewing the dev server from another
+device on a Tailscale network when it runs under WSL.
 
-## Recording (director)
+## Built with Claude Code
 
-Open `http://<tailscale-ip>:5180/director` in Chrome at 1440x900.
-
-- **Live**: a real call with the live agent and OpenAI voices. Press Start; the 3-2-1 countdown gives you
-  time to start recording (the click also unlocks audio). Confirm is a real click inside the link page.
-- **Replay**: re-runs a recorded passing call as a new call with a fresh real link token, playing the
-  recorded turns and voices with silent gaps capped at 700 ms. It pauses where the customer tapped
-  Confirm until you click Confirm in the link page. Pick a take; ★ copies it into `backend/takes/`.
-
-Takes come from live runs with voices: `make call S=order TTS=1` (writes `backend/runs/*.json`). Audio is
-cached in `backend/audio_cache/` (gitignored) and regenerated from a take's manifest if missing.
-
-## Remote access (Mac -> Tailscale -> this PC)
-
-Vite listens on `0.0.0.0:5180` inside WSL (NAT mode). To reach it from the tailnet:
-
-1. In WSL: `make remote-info` prints the networking mode, this PC's Tailscale IP and the exact command.
-2. On Windows, in an **elevated** PowerShell:
-   ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\Ubuntu-22.04\home\usr\SimpleAI_Demo\scripts\windows\expose-demo.ps1" -Distro Ubuntu-22.04
-   ```
-   NAT mode: a `netsh portproxy` from `<tailscale-ip>:5180` to the WSL IP, plus an inbound firewall rule
-   "Call Link Demo 5180 (Tailscale only)" for TCP 5180 from `100.64.0.0/10`. Mirrored mode: firewall
-   rules only. Idempotent. **Re-run it after a WSL restart or reboot** (the WSL IP changes).
-3. On the Mac: `http://<tailscale-ip>:5180/dev/screenshots`, and the links that `make live` prints.
-   For those links, set `PUBLIC_BASE_URL=http://<tailscale-ip>:5180` in `backend/.env` (gitignored;
-   the default is `http://localhost:5180`).
-4. Undo with `unexpose-demo.ps1` (same folder). It removes only what expose added.
-
-Rules for this machine: never run or change `tailscale serve`, `funnel`, `cert` or any Tailscale config
-(another project uses this machine's ts.net name); never `wsl --shutdown` or edit `.wslconfig`;
-headless browsers only.
-
-Anyone on the tailnet can reach the dev endpoints through the Vite proxy (`/api/dev/*`, including
-`/api/dev/calls/{id}/link`). Set `ENABLE_DEV_ROUTES=false` in `backend/.env` when that matters.
+[CLAUDE.md](CLAUDE.md) is the spec I wrote and handed to Claude Code, which built this repo from it.
+The agent's instructions for each scenario are in `backend/scenarios/*.prompt.md`.

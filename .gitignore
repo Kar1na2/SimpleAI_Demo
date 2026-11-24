@@ -12,6 +12,7 @@ backend/.env
 # Claude Code: personal settings and notes (CLAUDE.md is shared and stays committed)
 .claude/settings.local.json
 CLAUDE.local.md
+*.local.md
 
 # Call run logs written by `python -m app.call.run`
 backend/runs/

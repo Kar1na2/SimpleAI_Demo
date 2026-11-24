@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start a scripted call on the running backend and print its live link (open it on your Mac).
+# Start a scripted call on the running backend and print its live link (open it in a browser).
 #
 #   scripts/live-call.sh [order|reservation] [manual|auto] [speed]
 #   make live S=order MODE=manual SPEED=1

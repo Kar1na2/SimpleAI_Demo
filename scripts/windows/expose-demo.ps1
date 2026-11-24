@@ -21,7 +21,8 @@
   Undo everything it adds with unexpose-demo.ps1.
 
 .EXAMPLE
-  powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\Ubuntu-22.04\home\usr\SimpleAI_Demo\scripts\windows\expose-demo.ps1" -Distro Ubuntu-22.04
+  # `make remote-info` (in WSL) prints this command with your distro and repo path filled in.
+  powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\<distro>\<path-to-repo>\scripts\windows\expose-demo.ps1" -Distro <distro>
 #>
 #Requires -RunAsAdministrator
 [CmdletBinding()]

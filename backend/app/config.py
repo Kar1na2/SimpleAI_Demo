@@ -36,8 +36,10 @@ class Settings(BaseSettings):
     public_base_url: str = "http://localhost:5180"
     link_ttl_minutes: int = 30
 
-    # Not in CLAUDE.md: mounts /api/dev/* (create call, emit arbitrary event). Off outside local dev.
-    enable_dev_routes: bool = True
+    # Development-only routes: /api/dev/* (director call info, raw events, emit any event),
+    # /ws/calls/{id} (no token) and /api/replay/*. Off unless ENABLE_DEV_ROUTES=true; the director
+    # view needs them. Local development only.
+    enable_dev_routes: bool = False
 
 
 @lru_cache

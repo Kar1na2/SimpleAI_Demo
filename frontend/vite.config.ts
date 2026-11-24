@@ -53,7 +53,7 @@ function screenshotIndex(): Plugin {
 export default defineConfig({
   plugins: [react(), tailwindcss(), screenshotIndex()],
   server: {
-    host: '0.0.0.0', // reachable from Windows (and, once exposed, the tailnet); see README
+    host: '0.0.0.0', // reachable from Windows when running under WSL; see scripts/windows/expose-demo.ps1
     port: PORT,
     strictPort: true,
     allowedHosts: [...TAILNET_HOSTS, ...EXTRA_HOSTS],

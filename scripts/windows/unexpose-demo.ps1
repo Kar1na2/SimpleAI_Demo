@@ -11,7 +11,8 @@
   Never touches Tailscale configuration.
 
 .EXAMPLE
-  powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\Ubuntu-22.04\home\usr\SimpleAI_Demo\scripts\windows\unexpose-demo.ps1"
+  # `make remote-info` (in WSL) prints this command with your distro and repo path filled in.
+  powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\<distro>\<path-to-repo>\scripts\windows\unexpose-demo.ps1"
 #>
 #Requires -RunAsAdministrator
 [CmdletBinding()]
