@@ -9,13 +9,25 @@ dependencies = [
     "sqlalchemy[asyncio]>=2.0.36",
     "asyncpg>=0.30",
     "pydantic-settings>=2.6",
+    "anthropic>=2.13.0",
+    "pyyaml>=6.0.4",
+    "httpx>=0.28.1",
 ]
 
 [dependency-groups]
 dev = [
     "httpx>=0.27",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.5.0",
     "websockets>=13",
 ]
 
 [tool.uv]
 package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+# One event loop for the whole session: the SQLAlchemy/asyncpg pool is bound to it.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"

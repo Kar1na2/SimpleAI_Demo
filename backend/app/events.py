@@ -27,7 +27,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import func, insert, select, update
 
 from app.db import SessionLocal
 from app.models import CallEvent, CallSession
@@ -172,6 +172,17 @@ async def emit(
         event = serialize(row)  # transaction committed at this point
         bus.publish(cid, event)
     return event
+
+
+async def last_seqs(call_id: uuid.UUID | str) -> dict[str, int]:
+    """{event type: highest seq} for one call. A type is a key only if it occurred."""
+    async with SessionLocal() as session:
+        rows = await session.execute(
+            select(CallEvent.type, func.max(CallEvent.seq))
+            .where(CallEvent.call_id == uuid.UUID(str(call_id)))
+            .group_by(CallEvent.type)
+        )
+        return {t: s for t, s in rows}
 
 
 async def history(call_id: uuid.UUID | str, since: int = 0) -> list[Event]:

@@ -9,6 +9,8 @@ loads the fixed demo data below. Running it twice gives the same state.
 import asyncio
 import datetime as dt
 
+from sqlalchemy import text
+
 from app.db import Base, SessionLocal, engine
 from app.models import (
     Customer,
@@ -33,7 +35,9 @@ PRODUCTS = [
         sku="FP-RIBEYE-DA16",
         name="Dry-Aged Ribeye",
         description="16 oz ribeye, dry-aged 45 days for a deep, nutty flavor.",
-        price_cents=6800,
+        # 2 ribeyes + butter = $156, over the $150 free-shipping line, so the agent has no
+        # reason for a second upsell.
+        price_cents=7200,
         image_path="/products/ribeye.svg",
     ),
     dict(  # [CLAUDE.md]
@@ -75,7 +79,9 @@ PRODUCTS = [
 
 # [CLAUDE.md] Jamie Park showed interest in the ribeye (lead record). Cart starts empty, so no
 # cart is seeded: the agent's add_to_cart creates one for the call.
-JAMIE = dict(name="Jamie Park", phone="+15555550142", email="jamie.park@example.com")
+# Customer ids are fixed because scenarios/*.yaml reference them (meta.customer_id).
+JAMIE_ID = 1
+JAMIE = dict(id=JAMIE_ID, name="Jamie Park", phone="+15555550142", email="jamie.park@example.com")
 JAMIE_LEAD = dict(product_sku="FP-RIBEYE-DA16", note="Interested in the dry-aged ribeye.")
 
 # --- Juniper Table: restaurant, Scenario B (inbound) ---
@@ -85,7 +91,8 @@ SLOT_TIMES = [dt.time(h, m) for h in range(17, 22) for m in (0, 30)][:-1]  # 17:
 FULL_SLOTS = {(dt.date(2026, 12, 4), dt.time(19, 0))}  # [CLAUDE.md] Fri 19:00 full; 18:30 + 19:30 open
 
 # [CLAUDE.md] Daniel Cho calls in. The agent finds him by caller phone number.
-DANIEL = dict(name="Daniel Cho", phone="+15555550187", email="daniel.cho@example.com")
+DANIEL_ID = 2
+DANIEL = dict(id=DANIEL_ID, name="Daniel Cho", phone="+15555550187", email="daniel.cho@example.com")
 DANIEL_RESERVATION = dict(party_size=4, date=dt.date(2026, 12, 5), time=dt.time(19, 0))  # [CLAUDE.md] Sat
 # ======================================================================================
 
@@ -115,6 +122,11 @@ async def seed() -> dict[str, int]:
         jamie = Customer(**JAMIE)
         daniel = Customer(**DANIEL)
         session.add_all([jamie, daniel])
+        await session.flush()
+        # Explicit ids above: move the sequence past them.
+        await session.execute(
+            text("SELECT setval(pg_get_serial_sequence('customers', 'id'), (SELECT max(id) FROM customers))")
+        )
         session.add(Lead(customer=jamie, product=products[JAMIE_LEAD["product_sku"]], note=JAMIE_LEAD["note"]))
 
         slots = _slot_rows()

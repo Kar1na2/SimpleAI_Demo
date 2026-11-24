@@ -7,7 +7,8 @@ from sqlalchemy import text
 
 from app.config import get_settings
 from app.db import engine, init_db
-from app.routers import dev, ws
+from app.call.orchestrator import ACTIVE
+from app.routers import calls, dev, public
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -16,6 +17,9 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(messag
 async def lifespan(_: FastAPI):
     await init_db()
     yield
+    for run in list(ACTIVE.values()):  # end live calls cleanly on shutdown/reload
+        if run.task:
+            run.task.cancel()
     await engine.dispose()
 
 
@@ -34,6 +38,7 @@ async def health():
     return {"status": "ok", "db": "ok"}
 
 
-app.include_router(ws.router)
+app.include_router(public.router)
+app.include_router(calls.router)
 if get_settings().enable_dev_routes:
     app.include_router(dev.router)

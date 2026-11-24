@@ -1,0 +1,33 @@
+# Scenario B (CLAUDE.md > Scenarios): inbound call to the restaurant. The agent answers and
+# greets first. System prompt: reservation.prompt.md. Beat fields: see app/call/scenario.py.
+meta:
+  brand: Juniper Table
+  agent_name: Leo
+  direction: inbound
+  customer_id: 2 # Daniel Cho
+  customer_phone: "+15555550187"
+
+beats:
+  - id: c1
+    say: "Hi, I have a reservation and I need to change it. We've got one more person coming."
+
+  - id: c2
+    wait_for: { agent_said_matches: "link" }
+    say: "Yeah, sure, send it."
+
+  - id: c3
+    wait_for: { state: "reservation.party_size == 5" }
+    say: "Okay, I see it. Oh, wait. I didn't realize the fifth is a Saturday. Can we move it a day before, to Friday?"
+
+  - id: c4
+    wait_for: { agent_said_matches: "7:30|seven[- ]thirty|19:30" }
+    say: "Seven thirty works."
+
+  - id: c5
+    wait_for: { event: confirm.requested }
+    say: "Looks right. Confirming."
+    action: confirm
+
+  - id: c6
+    optional: true
+    say: "Thanks, bye."

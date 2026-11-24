@@ -1,4 +1,4 @@
-.PHONY: install db-up db-down db-reset seed backend frontend
+.PHONY: install db-up db-down db-reset seed backend frontend test call
 
 install:            ## Install backend (uv) and frontend (npm) dependencies
 	cd backend && uv sync
@@ -21,3 +21,9 @@ backend:            ## FastAPI on http://127.0.0.1:8000 (auto-reload)
 
 frontend:           ## Vite on http://localhost:5173 (proxies /api and /ws to :8000)
 	cd frontend && npm run dev
+
+test:               ## Backend tests (separate simpleai_test DB; no LLM calls)
+	cd backend && uv run pytest -q
+
+call:               ## Scripted call with the live agent: make call S=order SPEED=4 [MANUAL=1]
+	cd backend && uv run python -m app.call.run $(or $(S),order) --speed $(or $(SPEED),1) $(if $(MANUAL),--manual)
