@@ -93,7 +93,8 @@ async def test_replay_is_a_new_call_with_a_real_token_and_waits_for_a_real_click
     assert types.count("confirm.received") == 1 and types.count("link.minted") == 1
     assert types[-2:] == ["call.status", "link.revoked"]
     sent = next(e for e in events if e["type"] == "link.sent")["payload"]
-    assert token[:4] in sent["sms_text"] and "old token" not in sent["sms_text"]
+    assert sent["sms_text"] == f"Private link: …/s/{token[:4]}•••• (expires in 30 min)"  # no host, port or token
+    assert sent["from"] == "Fieldstone Provisions" and sent["to"] == "+1 •••-•••-0142"
     assert (await http.get(f"/api/s/{token}")).status_code == 410
     assert run.error is None
 

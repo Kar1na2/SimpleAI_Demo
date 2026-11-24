@@ -51,13 +51,15 @@ def link_url(raw: str) -> str:
     return f"{get_settings().public_base_url.rstrip('/')}/s/{raw}"
 
 
-def masked_url(raw: str) -> str:
-    return link_url(f"{raw[:4]}••••")
+def display_link(raw: str) -> str:
+    """The link as shown on screen: no host or port, and only the token's first 4 characters."""
+    return f"…/s/{raw[:4]}••••"
 
 
-def sms_text(brand: str, raw: str) -> str:
-    """The (simulated) SMS that carries the link. The token is masked: only its first 4 characters show."""
-    return f"{brand}: here's your private link for this call: {masked_url(raw)}"
+def link_sent_payload(brand: str, to: str, raw: str) -> dict[str, str]:
+    """Payload of link.sent: the (simulated) SMS. Never carries the host, the port or the full token."""
+    ttl = get_settings().link_ttl_minutes
+    return {"to": to, "from": brand, "sms_text": f"Private link: {display_link(raw)} (expires in {ttl} min)"}
 
 
 def mask_phone(phone: str | None) -> str:

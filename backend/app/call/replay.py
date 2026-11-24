@@ -37,7 +37,7 @@ from app.call.scenario import Scenario
 from app.call.tts import TTS, audio_path, clip_hash
 from app.db import SessionLocal
 from app.events import EventType, emit, last_seqs
-from app.links import mint, revoke, sms_text
+from app.links import link_sent_payload, mint, revoke
 from app.models import CallSession, CallStatus
 
 log = logging.getLogger(__name__)
@@ -207,7 +207,7 @@ class ReplayRun:
                     self.raw_token = await mint(self.call_id)  # a real, fresh token for this call
             elif etype == EventType.link_sent:
                 assert self.raw_token
-                await emit(self.call_id, etype, {"to": payload["to"], "sms_text": sms_text(self.scenario.brand, self.raw_token)})
+                await emit(self.call_id, etype, link_sent_payload(self.scenario.brand, payload["to"], self.raw_token))
             elif etype == EventType.confirm_received:
                 started = loop.time()
                 await self._wait_for_confirm()

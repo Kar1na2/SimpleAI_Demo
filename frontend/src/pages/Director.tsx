@@ -196,7 +196,7 @@ export default function Director() {
     if (Object.keys(arrived).length) setReceivedAt((prev) => ({ ...prev, ...arrived }))
   }, [events, engine])
 
-  // Call card info (link URL appears once the token is minted).
+  // Call card info. Refetched once the token is minted: link_url is the iframe's src only, never shown as text.
   const minted = events.some((e) => e.type === 'link.minted')
   useEffect(() => {
     if (!callId) return

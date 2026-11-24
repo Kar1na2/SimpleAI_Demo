@@ -28,7 +28,7 @@ from app.call import state
 from app.call.scenario import Scenario
 from app.db import SessionLocal
 from app.events import EventType, emit, history, last_seqs
-from app.links import live_url, mask_phone, sms_text
+from app.links import link_sent_payload, live_url, mask_phone
 from app.models import (
     Cart,
     CartItem,
@@ -541,7 +541,7 @@ async def send_link(ctx: ToolContext, args: dict[str, Any]):
     if not await _agent_mentioned_link(ctx.call_id):
         log.warning("call %s: send_link called before the agent offered the link", ctx.call_id)
     raw = url.rsplit("/", 1)[1]
-    await emit(ctx.call_id, EventType.link_sent, {"to": to, "sms_text": sms_text(ctx.scenario.brand, raw)})
+    await emit(ctx.call_id, EventType.link_sent, link_sent_payload(ctx.scenario.brand, to, raw))
     return {"status": "sent", "to": to}, f"Texted the live link to {to}"
 
 
