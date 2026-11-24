@@ -1,8 +1,8 @@
 // Director audio: TTS clips in order, a US ringback tone while ringing, a click at Connected.
 // Everything goes through one AudioContext, unlocked by the Start click (browser autoplay rules).
 
-export type Speaking = { name: string; speaker: 'agent' | 'customer' } | null
-type Clip = { url: string; name: string; speaker: 'agent' | 'customer' }
+export type Speaking = { name: string; speaker: 'agent' | 'customer'; turnId: number | null } | null
+type Clip = { url: string; name: string; speaker: 'agent' | 'customer'; turnId: number | null }
 
 export class AudioEngine {
   private ctx: AudioContext | null = null
@@ -55,7 +55,7 @@ export class AudioEngine {
       return
     }
     this.playing = true
-    this.setSpeaking({ name: clip.name, speaker: clip.speaker })
+    this.setSpeaking({ name: clip.name, speaker: clip.speaker, turnId: clip.turnId })
     this.el.src = clip.url
     this.el.play().catch(() => this.next())
   }

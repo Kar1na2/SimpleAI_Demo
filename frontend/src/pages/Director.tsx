@@ -53,20 +53,23 @@ const STEPS: Step[] = [
   { key: 'revoked', label: 'Link revoked', match: (e) => e.type === 'link.revoked' },
 ]
 
-function Timeline({ events, direction, live }: { events: CallEvent[]; direction: string | null; live: boolean }) {
+// Three states. done: the event happened (check mark + its time; the only state that may use green).
+// waiting: we're blocked on this step (e.g. the confirm click): a subtle grey pulse. upcoming: plain grey,
+// including the very next step.
+function Timeline({ events, direction, waitingFor }: { events: CallEvent[]; direction: string | null; waitingFor: string | null }) {
   const steps = STEPS.filter((s) => !s.outboundOnly || direction !== 'inbound')
   const hits = steps.map((s) => events.find(s.match))
-  const current = hits.findIndex((h) => !h)
   return (
     <ol className="relative" data-testid="timeline">
       {steps.map((s, i) => {
         const hit = hits[i]
-        const isCurrent = live && i === current
+        const waiting = !hit && s.key === waitingFor
         return (
           <li
             key={s.key}
             data-testid={`step-${s.key}`}
             data-done={Boolean(hit)}
+            data-state={hit ? 'done' : waiting ? 'waiting' : 'upcoming'}
             className={`relative -mx-2 flex items-center gap-3 rounded-md px-2 py-[5px] ${hit && s.key_moment ? 'animate-flash-key' : ''}`}
           >
             {i < steps.length - 1 && (
@@ -77,16 +80,16 @@ function Timeline({ events, direction, live }: { events: CallEvent[]; direction:
                 <span className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-stone-800 text-white">
                   <Check size={9} strokeWidth={3.5} />
                 </span>
-              ) : isCurrent ? (
+              ) : waiting ? (
                 <span className="relative flex h-[10px] w-[10px]">
-                  <span className="absolute inset-0 rounded-full bg-emerald-500 animate-live-ping" />
-                  <span className="relative h-[10px] w-[10px] rounded-full bg-emerald-500" />
+                  <span className="absolute inset-0 rounded-full bg-stone-300 animate-live-ping" />
+                  <span className="relative h-[10px] w-[10px] rounded-full bg-stone-400" />
                 </span>
               ) : (
                 <Circle size={10} className="text-stone-300" />
               )}
             </span>
-            <span className={`flex-1 text-[13px] ${hit ? 'text-stone-900' : isCurrent ? 'text-stone-700' : 'text-stone-400'}`}>{s.label}</span>
+            <span className={`flex-1 text-[13px] ${hit ? 'text-stone-900' : waiting ? 'text-stone-500' : 'text-stone-400'}`}>{s.label}</span>
             <span className="text-[11px] text-stone-400 tabular-nums">{hit ? timeOfDay(hit.created_at) : ''}</span>
           </li>
         )
@@ -127,7 +130,7 @@ function NowSpeaking({ speaking, engine }: { speaking: Speaking; engine: AudioEn
             ref={(el) => {
               bars.current[i] = el
             }}
-            className={`h-6 w-[3px] origin-center rounded-full transition-transform duration-75 ${speaking?.speaker === 'customer' ? 'bg-sky-500' : 'bg-emerald-600'}`}
+            className={`h-6 w-[3px] origin-center rounded-full transition-transform duration-75 ${!speaking ? 'bg-stone-300' : speaking.speaker === 'customer' ? 'bg-sky-500' : 'bg-emerald-600'}`}
             style={{ transform: 'scaleY(0.12)' }}
           />
         ))}
@@ -184,7 +187,12 @@ export default function Director() {
       const e = events[i]
       const t = Date.now()
       if (e.type === 'audio.play')
-        engine.enqueue({ url: String(e.payload.url), name: String(e.payload.name), speaker: e.payload.speaker === 'customer' ? 'customer' : 'agent' })
+        engine.enqueue({
+          url: String(e.payload.url),
+          name: String(e.payload.name),
+          speaker: e.payload.speaker === 'customer' ? 'customer' : 'agent',
+          turnId: e.payload.turn_id != null ? Number(e.payload.turn_id) : null,
+        })
       if (e.type === 'call.status') {
         if (e.payload.status === 'ringing') engine.startRing()
         else engine.stopRing()
@@ -349,7 +357,7 @@ export default function Director() {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3">
-          <Timeline events={events} direction={direction} live={running} />
+          <Timeline events={events} direction={direction} waitingFor={waitingForClick ? 'confirmed' : null} />
         </div>
 
         <div className="space-y-2 border-t border-black/[0.06] px-5 py-3">
@@ -380,6 +388,7 @@ export default function Director() {
           agentName={info?.agent_name ?? null}
           customerFirstName={info?.customer_name?.split(' ')[0] ?? null}
           sentAt={sent ? (receivedAt[sent.seq] ?? null) : null}
+          playingTurnId={speaking?.turnId ?? null}
         />
         {phase === 'countdown' && (
           <div className="absolute inset-0 flex items-center justify-center bg-stone-100/70 backdrop-blur-[2px]" data-testid="countdown">
