@@ -32,7 +32,8 @@ screen. Do not build anything the recording won't show.
       - TTS: OpenAI TTS. Model and voices from env (check current OpenAI docs for the model name).
         Two distinct voices: one for agent, one for customer.
         - No Rails, no AWS, no Alembic (use `create_all` + a seed script; this is a one-day demo).
-        - Dev env: Windows + WSL2. Repo lives in the Linux filesystem (`~/...`), not `/mnt/c`.
+        - Dev env: Windows + WSL2 (NAT networking mode). Repo lives in the Linux filesystem (`~/...`), not `/mnt/c`.
+          The user works remotely (Mac -> Tailscale -> SSH -> WSL/tmux); see "Remote access" below.
 
         ## Secrets
         - Keys live ONLY in `backend/.env` (gitignored), loaded with python-dotenv. Ship `.env.example`.
@@ -110,5 +111,24 @@ screen. Do not build anything the recording won't show.
                                                              ## Conventions
                                                              - Keep it simple and demo-grade, but no fake state in the UI: everything rendered comes from events or the DB.
                                                              - Product images: clean, generated SVG illustrations in `frontend/public/products/` (no downloaded photos).
-                                                             - Run commands: `docker compose up -d`, `backend: uvicorn app.main:app --reload --port 8000`,
-                                                               `frontend: npm run dev` (port 5173, proxy `/api` and `/ws` to 8000).[201~]]
+                                                             - Run commands: `docker compose up -d`, `backend: uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`,
+                                                               `frontend: npm run dev` (port **5180** via `FRONTEND_PORT`, host 0.0.0.0, strictPort; proxies `/api` and `/ws`
+                                                               to 127.0.0.1:8000). Make targets: `make backend`, `make frontend`, `make live`, `make remote-info`.
+                                                             - Screenshots go to `frontend/public/screenshots/` (gitignored), browsable at `/dev/screenshots`.
+
+## Remote access (Tailscale)
+- The user opens the frontend from a Mac at `http://<tailscale-ip>:5180` (this PC: <tailscale-ip>,
+  MagicDNS <machine>.<tailnet>.ts.net). Only the Vite port is exposed; uvicorn stays on 127.0.0.1:8000.
+- `PUBLIC_BASE_URL` defaults to `http://<tailscale-ip>:5180`, so links from `/api/dev/calls/{id}/link` open on the Mac.
+  Override in `backend/.env`.
+- Exposing is done by the user in an elevated Windows PowerShell with `scripts/windows/expose-demo.ps1`
+  (NAT: netsh portproxy tailscale-ip:5180 -> wsl-ip:5180, plus a firewall rule for 100.64.0.0/10 only).
+  Undo with `unexpose-demo.ps1`. Re-run expose after a WSL restart (the WSL IP changes). `make remote-info` prints the commands.
+- Hard rules:
+  - Never run or modify `tailscale serve`, `tailscale funnel`, `tailscale cert`, or any Tailscale config.
+    Another project uses this machine's ts.net domain. Read-only `tailscale.exe ip -4` / `status --json` is fine.
+  - Never run `wsl --shutdown` or change `.wslconfig`: it kills the session Claude Code runs in.
+  - Headless browsers only. Never launch a headed browser or open anything on Windows
+    (no explorer.exe, wslview, `cmd.exe /c start`).
+  - Don't try to elevate on Windows; the user runs the PowerShell scripts.
+[201~]]

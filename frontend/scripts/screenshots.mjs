@@ -1,8 +1,12 @@
-// Drives both scenarios through the real stack and screenshots the link page.
+// Drives both scenarios through the real stack and screenshots the link page (headless only).
 //
 //   make backend   # terminal 1
 //   make frontend  # terminal 2
-//   cd frontend && npm run screenshots      # SPEED=1.5 by default
+//   make screenshots                        # SPEED=1.5 by default
+//
+// Output: frontend/public/screenshots/ (gitignored), browsable at /dev/screenshots.
+// Link URLs from the dev endpoint use PUBLIC_BASE_URL (the Tailscale IP). Inside WSL that address
+// only answers once expose-demo.ps1 has run, so the browser here opens the same path on WEB.
 //
 // Each call starts with POST /api/calls/start (auto mode). The page is opened once link.sent has
 // happened (as a customer would), and every screenshot waits for a real DOM state, not a timer.
@@ -12,7 +16,9 @@ import { chromium } from 'playwright'
 
 const API = process.env.API ?? 'http://127.0.0.1:8000'
 const SPEED = Number(process.env.SPEED ?? 1.5)
-const OUT = new URL('../screenshots/', import.meta.url).pathname
+const WEB = process.env.WEB ?? `http://localhost:${process.env.FRONTEND_PORT ?? 5180}`
+const OUT = new URL('../public/screenshots/', import.meta.url).pathname
+const local = (url) => WEB + new URL(url).pathname
 const EXTRA = process.env.EXTRA_DIR // optional: Notes / Agent actions shots for review
 const WAIT = { timeout: 150_000 }
 const DESKTOP = { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 }
@@ -74,7 +80,7 @@ async function openLink(browser, url, opts, label) {
   const ctx = await browser.newContext(opts)
   const page = await ctx.newPage()
   watch(page, label)
-  await page.goto(url)
+  await page.goto(local(url))
   await page.getByTestId('link-page').waitFor(WAIT)
   return { ctx, page }
 }
@@ -155,7 +161,7 @@ try {
 } finally {
   await browser.close()
 }
-console.log(`\n${taken.length} screenshots in frontend/screenshots/`)
+console.log(`\n${taken.length} screenshots in frontend/public/screenshots/ (view at /dev/screenshots)`)
 console.log(`typing indicator seen during the order call: ${sawTyping ? 'yes' : 'NO'}`)
 if (!sawTyping) problems.push('typing indicator never appeared')
 if (problems.length) {

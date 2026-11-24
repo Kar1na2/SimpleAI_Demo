@@ -18,6 +18,8 @@ __pycache__/
 # Node / Vite
 node_modules/
 dist/
+# Screenshots from `npm run screenshots` (browse them at /dev/screenshots)
+frontend/public/screenshots/
 *.tsbuildinfo
 .vite/
 

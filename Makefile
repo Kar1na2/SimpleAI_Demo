@@ -1,4 +1,4 @@
-.PHONY: install db-up db-down db-reset seed backend frontend test call screenshots
+.PHONY: install db-up db-down db-reset seed backend frontend test call screenshots live remote-info
 
 install:            ## Install backend (uv) and frontend (npm) dependencies
 	cd backend && uv sync
@@ -16,10 +16,10 @@ db-reset:           ## Stop Postgres and delete its data volume
 seed:               ## Drop all tables, recreate, and load demo data
 	cd backend && uv run python -m app.seed
 
-backend:            ## FastAPI on http://127.0.0.1:8000 (auto-reload)
+backend:            ## FastAPI on http://127.0.0.1:8000 (auto-reload; loopback only, never exposed)
 	cd backend && uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
-frontend:           ## Vite on http://localhost:5173 (proxies /api and /ws to :8000)
+frontend:           ## Vite on 0.0.0.0:5180 (FRONTEND_PORT); proxies /api and /ws to 127.0.0.1:8000
 	cd frontend && npm run dev
 
 test:               ## Backend tests (separate simpleai_test DB; no LLM calls)
@@ -30,3 +30,9 @@ call:               ## Scripted call with the live agent: make call S=order SPEE
 
 screenshots:        ## Link page screenshots for both scenarios (needs `make backend` + `make frontend`)
 	cd frontend && npm run screenshots
+
+live:               ## Start a call on the running backend, print its link: make live S=order MODE=manual SPEED=1
+	scripts/live-call.sh $(or $(S),order) $(or $(MODE),manual) $(or $(SPEED),1)
+
+remote-info:        ## Networking mode, Tailscale URLs, and the PowerShell command to expose port 5180
+	scripts/remote-info.sh
