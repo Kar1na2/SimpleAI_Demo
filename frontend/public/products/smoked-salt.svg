@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Smoked flaky sea salt">
+  <rect width="480" height="360" rx="28" fill="#F4EDE3"/>
+  <ellipse cx="240" cy="290" rx="150" ry="14" fill="#E3D6C4"/>
+  <!-- jar -->
+  <rect x="166" y="120" width="128" height="166" rx="18" fill="#E9E2D6" stroke="#D2C6B3" stroke-width="3"/>
+  <!-- salt inside -->
+  <path d="M170 186c22-10 46 6 64-2s40-8 56 0v80a14 14 0 0 1-14 14H184a14 14 0 0 1-14-14Z" fill="#B9A58C"/>
+  <!-- lid -->
+  <rect x="158" y="96" width="144" height="34" rx="8" fill="#3A3A36"/>
+  <!-- label -->
+  <rect x="182" y="206" width="96" height="48" rx="6" fill="#2F4A3A"/>
+  <path d="M198 224h64M198 238h40" stroke="#F4EDE3" stroke-width="4" stroke-linecap="round"/>
+  <!-- loose flakes -->
+  <g fill="#C8B79F">
+    <path d="M330 262l12-8 8 10-12 6Z"/>
+    <path d="M354 274l10-6 6 8-10 4Z"/>
+    <path d="M318 280l8-4 4 6-8 3Z"/>
+  </g>
+  <!-- smoke wisp -->
+  <path d="M340 150c-14-16 10-26-2-44M360 166c-12-14 8-22-2-38" fill="none" stroke="#B5ADA2" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+</svg>

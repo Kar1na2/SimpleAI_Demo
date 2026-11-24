@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Steakhouse gift box">
+  <rect width="480" height="360" rx="28" fill="#F4EDE3"/>
+  <ellipse cx="240" cy="290" rx="140" ry="14" fill="#E3D6C4"/>
+  <!-- box -->
+  <rect x="142" y="162" width="196" height="122" rx="6" fill="#2F4A3A"/>
+  <rect x="130" y="134" width="220" height="40" rx="6" fill="#3B5C48"/>
+  <!-- ribbon -->
+  <rect x="226" y="134" width="28" height="150" fill="#C9A35B"/>
+  <rect x="142" y="210" width="196" height="22" fill="#C9A35B"/>
+  <rect x="226" y="210" width="28" height="22" fill="#B88F45"/>
+  <!-- bow -->
+  <path d="M240 134c-30-44-74-38-62-8 8 18 38 14 62 8Z" fill="#D8B46A"/>
+  <path d="M240 134c30-44 74-38 62-8-8 18-38 14-62 8Z" fill="#D8B46A"/>
+  <path d="M232 138l-16 30M248 138l16 30" stroke="#C9A35B" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="240" cy="134" r="11" fill="#B88F45"/>
+  <!-- tag -->
+  <rect x="282" y="242" width="40" height="28" rx="4" fill="#F4EDE3"/>
+  <path d="M290 252h24M290 260h16" stroke="#2F4A3A" stroke-width="3" stroke-linecap="round"/>
+</svg>

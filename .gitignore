@@ -1,0 +1,28 @@
+# Secrets
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Call run logs written by `python -m app.call.run`
+backend/runs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node / Vite
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+*.log

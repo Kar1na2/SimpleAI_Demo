@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Garlic-herb compound butter">
+  <rect width="480" height="360" rx="28" fill="#F4EDE3"/>
+  <ellipse cx="236" cy="282" rx="160" ry="14" fill="#E3D6C4"/>
+  <!-- parchment twist -->
+  <path d="M112 182l-40-32v96l40-32Z" fill="#FBF7EF" stroke="#E2D6C3" stroke-width="3" stroke-linejoin="round"/>
+  <!-- wrapped log -->
+  <rect x="104" y="150" width="190" height="96" rx="10" fill="#FBF7EF" stroke="#E2D6C3" stroke-width="3"/>
+  <!-- exposed butter -->
+  <rect x="236" y="150" width="68" height="96" fill="#F2CF6E"/>
+  <ellipse cx="304" cy="198" rx="22" ry="48" fill="#F7DE95"/>
+  <!-- slices -->
+  <ellipse cx="370" cy="236" rx="38" ry="30" fill="#F2CF6E"/>
+  <ellipse cx="370" cy="230" rx="38" ry="30" fill="#F7DE95"/>
+  <!-- herbs and garlic -->
+  <g fill="#5E7F43">
+    <circle cx="296" cy="178" r="3"/><circle cx="310" cy="196" r="2.5"/><circle cx="298" cy="214" r="3"/>
+    <circle cx="312" cy="226" r="2"/><circle cx="356" cy="222" r="3"/><circle cx="378" cy="216" r="2.5"/>
+    <circle cx="386" cy="236" r="3"/><circle cx="362" cy="242" r="2"/><circle cx="252" cy="172" r="2.5"/>
+    <circle cx="262" cy="224" r="3"/>
+  </g>
+  <g fill="#FFF6DA"><circle cx="370" cy="230" r="3"/><circle cx="304" cy="204" r="2.5"/></g>
+  <!-- sprig -->
+  <path d="M150 128c30-6 58 2 76 20" fill="none" stroke="#5E7F43" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#6E9150">
+    <ellipse cx="170" cy="120" rx="10" ry="5" transform="rotate(-25 170 120)"/>
+    <ellipse cx="194" cy="124" rx="10" ry="5" transform="rotate(10 194 124)"/>
+    <ellipse cx="212" cy="134" rx="10" ry="5" transform="rotate(35 212 134)"/>
+  </g>
+</svg>

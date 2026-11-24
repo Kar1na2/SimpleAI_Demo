@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Filet mignon">
+  <rect width="480" height="360" rx="28" fill="#F4EDE3"/>
+  <ellipse cx="240" cy="282" rx="138" ry="16" fill="#E3D6C4"/>
+  <!-- side -->
+  <path d="M132 160v78a108 42 0 0 0 216 0v-78Z" fill="#7E2F27"/>
+  <!-- butcher twine -->
+  <path d="M132 204a108 42 0 0 0 216 0" fill="none" stroke="#EADFC6" stroke-width="7"/>
+  <path d="M132 196a108 42 0 0 0 216 0" fill="none" stroke="#D9CBAE" stroke-width="2" opacity=".6"/>
+  <!-- top face -->
+  <ellipse cx="240" cy="160" rx="108" ry="42" fill="#B24A3D"/>
+  <ellipse cx="240" cy="160" rx="108" ry="42" fill="none" stroke="#8A352C" stroke-width="6"/>
+  <!-- grain -->
+  <g fill="none" stroke="#C86A5C" stroke-width="3" stroke-linecap="round" opacity=".8">
+    <ellipse cx="240" cy="160" rx="70" ry="25"/>
+    <ellipse cx="240" cy="160" rx="34" ry="12"/>
+  </g>
+</svg>
